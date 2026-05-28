@@ -439,12 +439,13 @@ var BASE = {
   alpedhuez:[304,344,440,392,1080], deuxalpes:[304,344,440,392,1080],
   geneve_ville:[304,344,440,392,1080], flaine:[304,344,440,392,1080],
   chambery:[180,220,250,240,600], grenoble:[180,220,250,240,600], chamrousse:[180,220,250,240,600],
-  geneve_airport:[250,280,380,330,800]
+  geneve_airport:[250,280,380,330,800],
+  partdieu:[2,2,2,2,2]
 };
 
 var DEPARTS = {
-  'LYS':{mult:1,ex:{geneve_airport:1}},
-  'PARTDIEU':{mult:1,ex:{geneve_airport:1}},
+  'LYS':{mult:1,ex:{geneve_airport:1,partdieu:1}},
+  'PARTDIEU':{mult:1,ex:{geneve_airport:1,partdieu:1}},
   'GVA':{mult:1,ex:{alpedhuez:1.15,deuxalpes:1.15,geneve_airport:1}},
   'GNB_AIR':{mult:1,ex:{alpedhuez:0.80,deuxalpes:0.80,geneve_airport:1}},
   'GNB_TRAIN':{mult:1,ex:{alpedhuez:0.80,deuxalpes:0.80,geneve_airport:1}},
@@ -473,7 +474,7 @@ var PLACES_AC = [
   {icon:'ti-plane',name:"Marseille Provence Airport",code:'MRS',depKey:'DEVIS',destKey:'devis_ville'},
   {icon:'ti-plane',name:"Paris Charles de Gaulle Airport",code:'CDG',depKey:'DEVIS',destKey:'devis_ville'},
   {icon:'ti-plane',name:"Paris Orly Airport",code:'ORY',depKey:'DEVIS',destKey:'devis_ville'},
-  {icon:'ti-train',name:"Lyon Part-Dieu Train Station",code:'LYS',depKey:'PARTDIEU',destKey:''},
+  {icon:'ti-train',name:"Lyon Part-Dieu Train Station",code:'LYS',depKey:'PARTDIEU',destKey:'partdieu'},
   {icon:'ti-train',name:"Grenoble Train Station",code:'GNB',depKey:'GNB_TRAIN',destKey:''},
   {icon:'ti-train',name:"Chambéry Train Station",code:'CMF',depKey:'CMF_TRAIN',destKey:''},
   {icon:'ti-train',name:"Genève Cornavin Train Station",code:'GVA',depKey:'GVA',destKey:''},
@@ -498,6 +499,7 @@ var PLACES_AC = [
   {icon:'ti-mountain',name:"Valmorel",code:'SKI',depKey:'',destKey:'valmorel'},
   {icon:'ti-mountain',name:"La Rosière",code:'SKI',depKey:'',destKey:'rosiere'},
   {icon:'ti-mountain',name:"Moutiers",code:'SKI',depKey:'',destKey:'menuires'},
+  {icon:'ti-train',name:"Lyon Part-Dieu",code:'LYS',depKey:'',destKey:'partdieu'},
   {icon:'ti-building',name:"Chambéry",code:'FR',depKey:'',destKey:'chambery'},
   {icon:'ti-building',name:"Grenoble",code:'FR',depKey:'',destKey:'grenoble'},
   {icon:'ti-building',name:"Genève",code:'CH',depKey:'',destKey:'geneve_ville'},
@@ -655,7 +657,7 @@ window.sqLancerPaiement = async function(){
       telephone: document.getElementById('p2-tel') ? document.getElementById('p2-tel').value : '',
     };
 
-    var response = await fetch('https://reservation.squeed.fr/api/create-checkout', {
+    var response = await fetch('https://luxury-mooncake-0a5563.netlify.app/.netlify/functions/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
