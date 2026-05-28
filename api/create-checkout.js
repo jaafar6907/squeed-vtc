@@ -17,8 +17,7 @@ module.exports = async function handler(req, res) {
     const modeLabel = mode || 'Aller simple';
     const horaireStr = horaire ? ` | Départ : ${horaire}` : '';
     const horaireRetourStr = horaireRetour ? ` | Retour : ${horaireRetour}` : '';
-    const descriptionLine = `${modeLabel} | ${depart} → ${destination} | ${vehicule} | ${date}${dateret ? ' | Retour : ' + dateret : ''}${horaireStr}${horaireRetourStr} | ${pax} passager(s)`;
-
+    const descriptionLine = `${modeLabel} | ${depart} → ${destination} | ${vehicule} | ${date}${horaireStr}${dateret ? ' | Retour : ' + dateret : ''}${horaireRetourStr} | ${pax} passager(s)`;
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{
