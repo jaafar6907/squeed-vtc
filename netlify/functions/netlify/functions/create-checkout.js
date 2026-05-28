@@ -57,8 +57,8 @@ exports.handler = async (event) => {
         nom: data.nom || '',
         telephone: data.telephone || '',
       },
-      success_url: 'https://squeed.fr/confirmation-paiement/?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'https://squeed.fr/reservation/',
+      success_url: 'https://reservation.squeed.fr/confirmation-paiement/?session_id={CHECKOUT_SESSION_ID}',
+cancel_url: 'https://reservation.squeed.fr/reservation/',
       locale: 'fr',
     });
 
