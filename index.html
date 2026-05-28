@@ -546,15 +546,16 @@ function renderVehicles(){
     if(firstVisible){sqState.vehicleNom=v.nom;if(v.idx>=0&&!isDevis){sqState.prixBase=(calcPrix(sqState.dep,sqState.dest,sqState.date,v.idx)||0)*(sqState.retour?2:1);updatePriceTable();}var sv=document.getElementById('sq-sidebar-vehicle');if(sv)sv.textContent=v.nom;}
     firstVisible=false;
 
-    card.onclick=function(){
+    card._sqSelect=function(){
       document.querySelectorAll('.sq-vcard').forEach(function(c){c.classList.remove('selected');});
       card.classList.add('selected');
       sqState.vehicleNom=v.nom;
       if(v.idx>=0&&!isDevis){sqState.prixBase=(calcPrix(sqState.dep,sqState.dest,sqState.date,v.idx)||0)*(sqState.retour?2:1);updatePriceTable();}
       var sv=document.getElementById('sq-sidebar-vehicle');if(sv)sv.textContent=v.nom;
-      document.getElementById('sq-p2-vehicle').textContent=v.nom;
-      document.getElementById('sq-p3-vehicle').textContent=v.nom;
+      var p2v=document.getElementById('sq-p2-vehicle');if(p2v)p2v.textContent=v.nom;
+      var p3v=document.getElementById('sq-p3-vehicle');if(p3v)p3v.textContent=v.nom;
     };
+    card.onclick=function(){card._sqSelect();};
 
     var bp=v.badge?v.badge.split('|'):null;
     var bh=bp?'<span class="sq-badge '+bp[0]+'">'+bp[1]+'</span>':'';
@@ -580,7 +581,7 @@ function renderVehicles(){
           +'<span><i class="ti ti-briefcase"></i> '+v.bagages+'</span>'
         +'</div>'
       +'</div>'
-      +'<div class="sq-vcard-price">'+ph+'<button class="sq-sel-btn" onclick="event.stopPropagation();card.click();sqGoTo(2)">Sélectionner</button></div>'
+      +'<div class="sq-vcard-price">'+ph+'<button class="sq-sel-btn" onclick="event.stopPropagation();card._sqSelect();sqGoTo(2)">Sélectionner</button></div>'
       +'</div>';
     list.appendChild(card);
   });
