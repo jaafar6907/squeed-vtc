@@ -1,31 +1,27 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Content-Type': 'application/json',
-};
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
 
-exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers: CORS, body: '' };
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: 'Method Not Allowed' }) };
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
   try {
-    const data = JSON.parse(event.body);
+    const data = req.body;
     const { montant, vehicule, depart, destination, date, dateret, mode, pax, description } = data;
 
     if (!montant || montant <= 0) {
-      return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'Montant invalide' }) };
+      return res.status(400).json({ error: 'Montant invalide' });
     }
 
-    // Description complète avec aller-retour si applicable
     const modeLabel = mode || 'Aller simple';
-    const descriptionLine = description || 
+    const descriptionLine = description ||
       `${modeLabel} | ${depart} → ${destination} | ${vehicule} | ${date}${dateret ? ' | Retour : ' + dateret : ''} | ${pax} passager(s)`;
 
     const session = await stripe.checkout.sessions.create({
@@ -57,23 +53,15 @@ exports.handler = async (event) => {
         nom: data.nom || '',
         telephone: data.telephone || '',
       },
-      success_url: 'https://squeed.fr/confirmation-paiement/?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'https://squeed.fr/reservation/',
+      success_url: 'https://reservation.squeed.fr/confirmation-paiement/?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url: 'https://reservation.squeed.fr/reservation/',
       locale: 'fr',
     });
 
-    return {
-      statusCode: 200,
-      headers: CORS,
-      body: JSON.stringify({ url: session.url }),
-    };
+    return res.status(200).json({ url: session.url });
 
   } catch (err) {
     console.error('Stripe error:', err);
-    return {
-      statusCode: 500,
-      headers: CORS,
-      body: JSON.stringify({ error: err.message }),
-    };
+    return res.status(500).json({ error: err.message });
   }
-};
+}
