@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Limo Alpes — Réservation VTC</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+.sq-tunnel { max-width: 1080px; margin: 0 auto; padding: 20px 20px 80px; font-family: 'DM Sans', sans-serif; color: #111; }
+
+.sq-recap-bar { background: linear-gradient(135deg, #0a1628 0%, #1a2d52 60%, #0f2240 100%); border: none; border-radius: 0; padding: 20px 40px; margin-bottom: 20px; margin-left: -20px; margin-right: -20px; }
+.sq-recap-tabs { display: flex; margin-bottom: 12px; }
+.sq-recap-tab { padding: 7px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.5); cursor: pointer; border: none; background: transparent; border-bottom: 2px solid transparent; }
+.sq-recap-tab.active { color: #fff; border-bottom-color: #FFA532; font-weight: 600; }
+.sq-recap-inner { display: flex; align-items: center; flex: 1; background: rgba(255,255,255,0.08); border-radius: 8px; border: 0.5px solid rgba(255,255,255,0.15); }
+.sq-rf { display: flex; align-items: center; gap: 8px; flex: 1; padding: 10px 14px; position: relative; min-width: 0; }
+.sq-rf + .sq-rf { border-left: 1px solid rgba(255,255,255,0.12); }
+.sq-rf-icon { color: rgba(255,255,255,0.4); font-size: 15px; flex-shrink: 0; }
+.sq-rf-inner { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.sq-rf-label { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.4); letter-spacing: 0.8px; text-transform: uppercase; line-height: 1; margin-bottom: 2px; }
+.sq-rf-input { border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; color: #fff; background: transparent; padding: 0; width: 100%; }
+.sq-rf-input::placeholder { color: rgba(255,255,255,0.3); }
+.sq-rf-input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.5; cursor: pointer; }
+.sq-rf-swap { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: rgba(255,255,255,0.1); border-radius: 50%; cursor: pointer; border: 0.5px solid rgba(255,255,255,0.2); flex-shrink: 0; margin: 0 4px; }
+.sq-rf-swap i { color: #fff; font-size: 14px; }
+.sq-rf-sep { width: 1px; height: 32px; background: rgba(255,255,255,0.15); flex-shrink: 0; }
+.sq-rf-pax { display: flex; align-items: center; gap: 6px; padding: 0 10px; flex-shrink: 0; }
+.sq-rf-pax-btn { width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; }
+.sq-rf-pax-count { font-size: 13px; font-weight: 600; color: #fff; min-width: 18px; text-align: center; }
+.sq-rf-update-btn { background: #FFA532; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; min-width: 90px; max-width: 90px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; white-space: normal; flex-shrink: 0; margin-left: 10px; line-height: 1.3; text-align: center; }
+.sq-rf-update-btn:hover { background: #e8941e; }
+
+.sq-rdd { position: absolute; top: calc(100% + 6px); left: 0; min-width: 280px; background: #fff; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); z-index: 9999; overflow: hidden; display: none; border: 0.5px solid rgba(0,0,0,0.07); }
+.sq-rdd.open { display: block; }
+.sq-rdd-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; font-size: 12px; color: #111; }
+.sq-rdd-item:hover, .sq-rdd-item.first { background: #EEF2FF; }
+.sq-rdd-item i { color: #6b7280; font-size: 14px; flex-shrink: 0; }
+
+.sq-stepper { display: flex; align-items: center; background: #fff; border-radius: 10px; padding: 16px 24px; border: 0.5px solid rgba(0,0,0,0.08); margin-bottom: 22px; }
+.sq-step { display: flex; align-items: center; gap: 8px; flex: 1; }
+.sq-step-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+.sq-step-num.done { background: #057a55; color: #fff; }
+.sq-step-num.active { background: #1a56db; color: #fff; }
+.sq-step-num.todo { background: #f3f4f6; color: #9ca3af; }
+.sq-step-label { font-size: 12px; font-weight: 500; }
+.sq-step-label.done { color: #057a55; }
+.sq-step-label.active { color: #1a56db; font-weight: 600; }
+.sq-step-label.todo { color: #9ca3af; }
+.sq-step-line { flex: 1; height: 1px; margin: 0 14px; }
+.sq-step-line.done { background: #057a55; }
+.sq-step-line.todo { background: #e5e7eb; }
+
+.sq-page { display: none; }
+.sq-page.active { display: block; }
+.sq-layout { display: grid; grid-template-columns: 1fr 250px; gap: 16px; align-items: start; }
+@media (max-width: 768px) { .sq-layout { grid-template-columns: 1fr; } }
+
+.sq-section { background: #fff; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 22px 24px; margin-bottom: 14px; }
+.sq-section-title { font-size: 15px; font-weight: 500; color: #111; margin-bottom: 16px; }
+.sq-info-bar { display: flex; align-items: center; gap: 8px; background: #EEF2FF; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; color: #3730a3; font-size: 12px; }
+.sq-majo-banner { display: flex; align-items: center; gap: 8px; background: #FEE2E2; border: 0.5px solid #FECACA; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 12px; color: #991B1B; }
+
+.sq-vcard { background: #fff; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 16px 20px; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+.sq-vcard:hover { border-color: #1a56db; box-shadow: 0 4px 16px rgba(26,86,219,0.12); transform: translateY(-1px); }
+.sq-vcard.selected { border: 2px solid #1a56db; background: #f0f5ff; box-shadow: 0 4px 16px rgba(26,86,219,0.15); }
+.sq-vcard-row { display: flex; align-items: center; gap: 14px; }
+.sq-vcar-img { width: 110px; height: 70px; border-radius: 8px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+.sq-vcar-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+.sq-vcar-img i { font-size: 28px; color: #9ca3af; }
+.sq-vcard-info { flex: 1; min-width: 0; }
+.sq-vcard-name { font-size: 16px; font-weight: 600; margin-bottom: 5px; color: #111; }
+.sq-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+.sq-badge-green { background: #DEF7EC; color: #03543F; }
+.sq-badge-blue { background: #E1EFFE; color: #1E40AF; }
+.sq-badge-amber { background: #FEF3C7; color: #92400E; }
+.sq-vcard-meta { display: flex; align-items: center; gap: 12px; margin-top: 6px; font-size: 12px; color: #6b7280; }
+.sq-vcard-price { text-align: right; flex-shrink: 0; min-width: 140px; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.sq-price-old { font-size: 12px; color: #E24B4A; text-decoration: line-through; font-weight: 500; margin-bottom: 1px; }
+.sq-price-new { font-size: 22px; font-weight: 700; color: #111; }
+.sq-price-retour { font-size: 11px; color: #6b7280; margin-top: 2px; }
+.sq-price-devis { font-size: 14px; font-weight: 500; color: #6b7280; font-style: italic; }
+.sq-sel-btn { margin-top: 6px; background: #1a56db; color: #fff; border: none; border-radius: 7px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; width: 100%; }
+.sq-sel-btn:hover { background: #1e40af; }
+
+.sq-fi { border: 0.5px solid rgba(0,0,0,0.18); border-radius: 8px; padding: 10px 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #111; background: #fff; outline: none; width: 100%; }
+.sq-fi:focus { border-color: #1a56db; }
+.sq-fi::placeholder { color: #9ca3af; }
+select.sq-fi { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+.sq-form-row { display: flex; gap: 10px; margin-bottom: 10px; }
+.sq-cb-row { display: flex; align-items: flex-start; gap: 12px; padding: 11px 0; border-bottom: 0.5px solid rgba(0,0,0,0.07); }
+.sq-cb-row:last-child { border-bottom: none; }
+.sq-cb { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid rgba(0,0,0,0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; background: #fff; }
+.sq-cb.checked { background: #1a56db; border-color: #1a56db; }
+.sq-tip-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.sq-tip-btn { flex: 1; padding: 9px 4px; border: 0.5px solid rgba(0,0,0,0.15); border-radius: 8px; background: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #111; cursor: pointer; text-align: center; }
+.sq-tip-btn.active { background: #1a56db; border-color: #1a56db; color: #fff; }
+.sq-cancel-box { display: flex; align-items: center; justify-content: space-between; background: #EEF2FF; border: 0.5px solid #C7D7FD; border-radius: 10px; padding: 14px 16px; cursor: pointer; }
+.sq-price-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+.sq-price-table tr td { padding: 5px 0; color: #6b7280; }
+.sq-price-table tr td:last-child { text-align: right; color: #111; }
+.sq-price-table .sq-subtotal td { font-weight: 500; color: #111; font-size: 14px; padding: 10px 0 4px; }
+.sq-price-table .sq-total-row td { font-size: 16px; font-weight: 600; padding: 8px 0 4px; border-top: 0.5px solid rgba(0,0,0,0.08); }
+.sq-phone-row { display: flex; border: 0.5px solid rgba(0,0,0,0.18); border-radius: 8px; overflow: hidden; }
+.sq-phone-prefix { display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-right: 0.5px solid rgba(0,0,0,0.08); background: #f9fafb; font-size: 13px; white-space: nowrap; }
+.sq-phone-input { border: none; flex: 1; padding: 10px 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; }
+.sq-link-box { border: 0.5px solid rgba(0,0,0,0.15); border-radius: 10px; overflow: hidden; margin-top: 12px; }
+.sq-link-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 0.5px solid rgba(0,0,0,0.07); }
+.sq-link-dot { width: 16px; height: 16px; border-radius: 50%; background: #00A651; display: flex; align-items: center; justify-content: center; }
+.sq-card-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; }
+.sq-visa-badge { background: #1a1f71; color: #fff; font-size: 10px; font-weight: 700; padding: 3px 6px; border-radius: 4px; }
+.sq-continue-btn { display: block; width: 100%; background: #16a34a; color: #fff; border: none; border-radius: 10px; padding: 15px; font-size: 15px; font-weight: 700; letter-spacing: 1px; cursor: pointer; font-family: 'DM Sans', sans-serif; text-transform: uppercase; margin-top: 8px; }
+.sq-continue-btn:hover { background: #15803d; }
+.sq-reserve-btn { display: block; width: 100%; background: #16a34a; color: #fff; border: none; border-radius: 10px; padding: 16px; font-size: 15px; font-weight: 700; letter-spacing: 2px; cursor: pointer; font-family: 'DM Sans', sans-serif; text-transform: uppercase; }
+.sq-reserve-btn:hover { background: #15803d; }
+.sq-reserve-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+.sq-sidebar { display: flex; flex-direction: column; gap: 12px; }
+.sq-scard { background: #fff; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 14px 16px; }
+.sq-route-dot { display: flex; align-items: flex-start; gap: 10px; padding-bottom: 10px; position: relative; }
+.sq-route-dot:not(:last-child)::after { content: ''; position: absolute; left: 7px; top: 16px; width: 1px; height: calc(100% - 4px); background: rgba(0,0,0,0.15); }
+.sq-rdot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #9ca3af; background: #fff; flex-shrink: 0; margin-top: 2px; }
+.sq-rdot.end { background: #1a56db; border-color: #1a56db; }
+.sq-feat { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-top: 0.5px solid rgba(0,0,0,0.07); }
+.sq-feat:first-child { border-top: none; padding-top: 0; }
+.sq-feat-icon { font-size: 16px; color: #1a56db; flex-shrink: 0; margin-top: 1px; }
+.sq-feat-title { font-size: 12px; font-weight: 500; }
+.sq-feat-desc { font-size: 11px; color: #6b7280; line-height: 1.4; margin-top: 2px; }
+.sq-confirm-box { background: #fff; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 16px; padding: 48px 40px; text-align: center; max-width: 540px; margin: 0 auto; }
+.sq-confirm-icon { width: 72px; height: 72px; border-radius: 50%; background: #DEF7EC; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+.sq-confirm-recap { background: #f9fafb; border-radius: 10px; padding: 16px 20px; text-align: left; margin: 20px 0; }
+
+/* Stripe loading overlay */
+#sq-stripe-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:99999; align-items:center; justify-content:center; flex-direction:column; gap:16px; }
+#sq-stripe-overlay.active { display:flex; }
+.sq-stripe-spinner { width:40px; height:40px; border:3px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.sq-stripe-msg { color:#fff; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; }
+</style>
+
+<!-- Stripe loading overlay -->
+<div id="sq-stripe-overlay">
+  <div class="sq-stripe-spinner"></div>
+  <div class="sq-stripe-msg">Redirection vers le paiement sécurisé…</div>
+</div>
+
+<div class="sq-tunnel">
+
+  <!-- BARRE RECAP -->
+  <div class="sq-recap-bar" id="sq-recap-bar">
+    <div class="sq-recap-tabs">
+      <button class="sq-recap-tab active" id="sq-tab-retour" onclick="sqRTab(this,'retour')">Aller-retour</button>
+      <button class="sq-recap-tab" id="sq-tab-simple" onclick="sqRTab(this,'simple')">Aller simple</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="sq-recap-inner" style="flex:1">
+        <div class="sq-rf" style="flex:2.5" id="sq-rf-dep-wrap">
+          <i class="ti ti-map-pin sq-rf-icon"></i>
+          <div class="sq-rf-inner">
+            <span class="sq-rf-label">De</span>
+            <input class="sq-rf-input" id="sqRDep" type="text" placeholder="Départ…" autocomplete="off" />
+          </div>
+          <div class="sq-rdd" id="sqRDdDep"></div>
+        </div>
+        <button class="sq-rf-swap" onclick="sqRSwap()"><i class="ti ti-arrows-exchange"></i></button>
+        <div class="sq-rf" style="flex:2.5;border-left:none" id="sq-rf-vers-wrap">
+          <i class="ti ti-flag sq-rf-icon"></i>
+          <div class="sq-rf-inner">
+            <span class="sq-rf-label">Vers</span>
+            <input class="sq-rf-input" id="sqRVers" type="text" placeholder="Destination…" autocomplete="off" />
+          </div>
+          <div class="sq-rdd" id="sqRDdVers"></div>
+        </div>
+        <div class="sq-rf-sep"></div>
+        <div class="sq-rf" style="flex:1.8;padding:8px 8px">
+          <i class="ti ti-calendar sq-rf-icon"></i>
+          <div class="sq-rf-inner">
+            <span class="sq-rf-label">Départ</span>
+            <input class="sq-rf-input" id="sqRDateDep" type="date" onchange="sqUpdateMinRetour(this.value)" />
+          </div>
+        </div>
+        <div class="sq-rf" id="sqRRetourField" style="flex:1.8;padding:8px 8px">
+          <i class="ti ti-calendar-event sq-rf-icon"></i>
+          <div class="sq-rf-inner">
+            <span class="sq-rf-label">Retour</span>
+            <input class="sq-rf-input" id="sqRDateRet" type="date" />
+          </div>
+        </div>
+        <div class="sq-rf-sep"></div>
+        <div class="sq-rf-pax">
+          <i class="ti ti-users sq-rf-icon"></i>
+          <button class="sq-rf-pax-btn" onclick="sqRPax(-1)">−</button>
+          <span class="sq-rf-pax-count" id="sqRPaxCount">1</span>
+          <button class="sq-rf-pax-btn" onclick="sqRPax(1)">+</button>
+        </div>
+      </div>
+      <button class="sq-rf-update-btn" onclick="sqRefreshPrix()">Mettre à jour l'itinéraire</button>
+    </div>
+  </div>
+
+  <!-- STEPPER -->
+  <div class="sq-stepper" id="sq-stepper">
+    <div class="sq-step"><div class="sq-step-num active" id="sq-sn1">1</div><span class="sq-step-label active" id="sq-sl1">Sélectionnez votre véhicule</span></div>
+    <div class="sq-step-line todo" id="sq-line1"></div>
+    <div class="sq-step"><div class="sq-step-num todo" id="sq-sn2">2</div><span class="sq-step-label todo" id="sq-sl2">Détails de la réservation</span></div>
+    <div class="sq-step-line todo" id="sq-line2"></div>
+    <div class="sq-step"><div class="sq-step-num todo" id="sq-sn3">3</div><span class="sq-step-label todo" id="sq-sl3">Paiement et confirmation</span></div>
+  </div>
+
+  <!-- PAGE 1 -->
+  <div class="sq-page active" id="sq-page1">
+    <div id="sq-majo-banner"></div>
+    <div class="sq-info-bar"><i class="ti ti-info-circle"></i>&nbsp; Réservez votre transfert en 3 étapes simples — sûr, privé et sécurisé.</div>
+    <div class="sq-layout">
+      <div id="sq-vehicles-list"></div>
+      <div class="sq-sidebar">
+        <div class="sq-scard">
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px"><i class="ti ti-map-pin" style="color:#6b7280"></i> <span id="sq-sidebar-dep">—</span></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px"><span style="color:#F59E0B">★★★★★</span><span style="font-size:12px;font-weight:500">4.9</span><span style="font-size:11px;color:#6b7280">· 186 avis</span></div>
+          
+          <div class="sq-route-dot"><div class="sq-rdot"></div><div><div style="font-size:13px;font-weight:500" id="sq-sidebar-dep2">—</div><div style="font-size:11px;color:#6b7280" id="sq-sidebar-date">—</div></div></div>
+          <div class="sq-route-dot"><div class="sq-rdot end"></div><div><div style="font-size:13px;font-weight:500" id="sq-sidebar-dest">—</div><div style="font-size:11px;color:#6b7280" id="sq-sidebar-dateret"></div></div></div>
+          <div style="border-top:0.5px solid #e5e7eb;padding-top:10px;margin-top:4px;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:center;gap:10px"><i class="ti ti-clock" style="font-size:15px;color:#9ca3af"></i><div style="font-size:12px;color:#6b7280" id="sq-sidebar-horaire">Horaire non sélectionné</div></div>
+            <div style="display:flex;align-items:center;gap:10px"><div style="width:42px;height:28px;background:#f3f4f6;border-radius:5px;display:flex;align-items:center;justify-content:center"><i class="ti ti-bus" style="font-size:18px;color:#9ca3af"></i></div><div style="font-size:12px;font-weight:500" id="sq-sidebar-vehicle">—</div></div>
+          </div>
+        </div>
+        <div class="sq-scard">
+          <div class="sq-feat"><i class="ti ti-car sq-feat-icon"></i><div><div class="sq-feat-title">Transferts privés uniquement</div><div class="sq-feat-desc">Service direct, porte-à-porte.</div></div></div>
+          <div class="sq-feat"><i class="ti ti-plane sq-feat-icon"></i><div><div class="sq-feat-title">Suivi de vol</div><div class="sq-feat-desc">Ajustement automatique de l'heure.</div></div></div>
+          <div class="sq-feat"><i class="ti ti-user-check sq-feat-icon"></i><div><div class="sq-feat-title">Chauffeurs professionnels</div><div class="sq-feat-desc">Certifiés, expérimentés et anglophones.</div></div></div>
+          <div class="sq-feat"><i class="ti ti-headset sq-feat-icon"></i><div><div class="sq-feat-title">Support 24h/24 et 7j/7</div><div class="sq-feat-desc">Disponibles avant, pendant et après.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 2 -->
+  <div class="sq-page" id="sq-page2">
+    <div class="sq-layout">
+      <div>
+        <div class="sq-section">
+          <div class="sq-section-title">Prise en charge à l'aéroport</div>
+          <div class="sq-form-row">
+            <input class="sq-fi" id="p2-vol" type="text" placeholder="Numéro de vol à l'arrivée (en option)" style="flex:2">
+            <select class="sq-fi" id="p2-heure" onchange="sqUpdateHoraire()" style="flex:1"><option>Horaires</option><option>00:00</option><option>01:00</option><option>02:00</option><option>03:00</option><option>04:00</option><option>05:00</option><option>06:00</option><option>07:00</option><option>08:00</option><option>09:00</option><option>10:00</option><option>11:00</option><option>12:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>16:00</option><option>17:00</option><option>18:00</option><option>19:00</option><option>20:00</option><option>21:00</option><option>22:00</option><option>23:00</option></select>
+            <select class="sq-fi" id="p2-minute" onchange="sqUpdateHoraire()" style="flex:0.8"><option>Minute</option><option>00</option><option>15</option><option>30</option><option>45</option></select>
+          </div>
+
+        </div>
+        
+          <div id="sq-section-retour" style="display:none;margin-top:16px;">
+            <div class="sq-section-title">Horaire retour</div>
+            <div class="sq-form-row">
+              <select class="sq-fi" id="p2-heure-ret" onchange="sqUpdateHoraire()" style="flex:1">
+                <option>Horaires</option>
+                <option>00:00</option>
+                <option>01:00</option>
+                <option>02:00</option>
+                <option>03:00</option>
+                <option>04:00</option>
+                <option>05:00</option>
+                <option>06:00</option>
+                <option>07:00</option>
+                <option>08:00</option>
+                <option>09:00</option>
+                <option>10:00</option>
+                <option>11:00</option>
+                <option>12:00</option>
+                <option>13:00</option>
+                <option>14:00</option>
+                <option>15:00</option>
+                <option>16:00</option>
+                <option>17:00</option>
+                <option>18:00</option>
+                <option>19:00</option>
+                <option>20:00</option>
+                <option>21:00</option>
+                <option>22:00</option>
+                <option>23:00</option>
+              </select>
+              <select class="sq-fi" id="p2-minute-ret" onchange="sqUpdateHoraire()" style="flex:0.8">
+                <option>Minute</option>
+                <option>00</option>
+                <option>15</option>
+                <option>30</option>
+                <option>45</option>
+              </select>
+            </div>
+          </div>
+<div class="sq-section">
+          <div class="sq-section-title">Lieu de dépose</div>
+          <input class="sq-fi" id="p2-adresse" type="text" placeholder="Adresse de destination">
+        </div>
+        <div class="sq-section">
+          <div class="sq-section-title">Équipements et suppléments</div>
+          <div class="sq-cb-row"><div class="sq-cb" onclick="sqToggleCb(this)"></div><div><div style="font-size:13px;font-weight:500">Réhausseur</div><div style="font-size:12px;color:#6b7280">Gratuit</div></div></div>
+          <div class="sq-cb-row"><div class="sq-cb" onclick="sqToggleCb(this)"></div><div><div style="font-size:13px;font-weight:500">Siège enfant</div><div style="font-size:12px;color:#6b7280">Gratuit</div></div></div>
+          <div class="sq-cb-row"><div class="sq-cb" onclick="sqToggleCb(this)"></div><div><div style="font-size:13px;font-weight:500">Siège bébé</div><div style="font-size:12px;color:#6b7280">EUR 5.00</div></div></div>
+          <div class="sq-cb-row"><div class="sq-cb" onclick="sqToggleCb(this)"></div><div><div style="font-size:13px;font-weight:500">Support ski (4 max)</div><div style="font-size:12px;color:#6b7280">EUR 20.00</div></div></div>
+          <div class="sq-cb-row"><div class="sq-cb" onclick="sqToggleCb(this)"></div><div><div style="font-size:13px;font-weight:500">Vélo</div><div style="font-size:12px;color:#6b7280">EUR 18.00</div></div></div>
+          <div class="sq-cb-row"><div class="sq-cb" onclick="sqToggleCb(this)"></div><div><div style="font-size:13px;font-weight:500">Fauteuil Roulant</div><div style="font-size:12px;color:#6b7280">Libre</div></div></div>
+        </div>
+        <div class="sq-section">
+          <div class="sq-section-title">Vos informations</div>
+          <div class="sq-form-row"><input class="sq-fi" id="p2-prenom" type="text" placeholder="Prénom"><input class="sq-fi" id="p2-nom" type="text" placeholder="Nom"></div>
+          <div class="sq-form-row"><div style="flex:1;display:flex;align-items:center;gap:8px;border:0.5px solid rgba(0,0,0,0.18);border-radius:8px;padding:10px 12px"><i class="ti ti-mail" style="font-size:16px;color:#9ca3af"></i><input id="p2-email" style="border:none;outline:none;flex:1;font-family:'DM Sans',sans-serif;font-size:13px" type="email" placeholder="Votre adresse e-mail"></div></div>
+          <div class="sq-form-row"><select class="sq-fi"><option>France</option><option>Belgique</option><option>Suisse</option></select></div>
+          <div class="sq-phone-row"><div class="sq-phone-prefix">🇫🇷 +33</div><input id="p2-tel" class="sq-phone-input" type="tel" placeholder="Numéro de téléphone"></div>
+        </div>
+        <button class="sq-continue-btn" onclick="sqValiderEtape2()">Continuez →</button>
+      </div>
+      <div class="sq-sidebar">
+        <div class="sq-scard">
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px" id="sq-p2-trajet">—</div>
+          <div class="sq-route-dot"><div class="sq-rdot"></div><div><div style="font-size:13px;font-weight:500" id="sq-p2-dep">—</div><div style="font-size:11px;color:#6b7280" id="sq-p2-date">—</div></div></div>
+          <div class="sq-route-dot"><div class="sq-rdot end"></div><div><div style="font-size:13px;font-weight:500" id="sq-p2-dest">—</div><div style="font-size:11px;color:#6b7280" id="sq-p2-dateret"></div></div></div>
+          <div style="border-top:0.5px solid #e5e7eb;padding-top:10px;margin-top:4px;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:center;gap:10px"><i class="ti ti-clock" style="font-size:15px;color:#9ca3af"></i><div style="font-size:12px;color:#6b7280" id="sq-p2-horaire">Horaire non sélectionné</div></div>
+            <div style="display:flex;align-items:center;gap:10px"><div style="width:42px;height:28px;background:#f3f4f6;border-radius:5px;display:flex;align-items:center;justify-content:center"><i class="ti ti-bus" style="font-size:18px;color:#9ca3af"></i></div><div style="font-size:12px;font-weight:500" id="sq-p2-vehicle">—</div></div>
+          </div>
+        </div>
+        <div class="sq-scard">
+          <div class="sq-feat"><i class="ti ti-car sq-feat-icon"></i><div><div class="sq-feat-title">Transferts privés uniquement</div><div class="sq-feat-desc">Service direct, porte-à-porte.</div></div></div>
+          <div class="sq-feat"><i class="ti ti-plane sq-feat-icon"></i><div><div class="sq-feat-title">Suivi de vol</div><div class="sq-feat-desc">Ajustement automatique de l'heure.</div></div></div>
+          <div class="sq-feat"><i class="ti ti-user-check sq-feat-icon"></i><div><div class="sq-feat-title">Chauffeurs professionnels</div><div class="sq-feat-desc">Certifiés, expérimentés et anglophones.</div></div></div>
+          <div class="sq-feat"><i class="ti ti-headset sq-feat-icon"></i><div><div class="sq-feat-title">Support 24h/24 et 7j/7</div><div class="sq-feat-desc">Disponibles avant, pendant et après.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 3 -->
+  <div class="sq-page" id="sq-page3">
+    <div class="sq-layout">
+      <div>
+        <div class="sq-section">
+          <div class="sq-section-title">Ajouter un pourboire</div>
+          <div style="font-size:12px;color:#6b7280;margin-bottom:12px" id="sq-tip-label">5% du sous-total</div>
+          <div class="sq-tip-row">
+            <button class="sq-tip-btn active" onclick="sqSetTip(this,0)">0 %</button>
+            <button class="sq-tip-btn" onclick="sqSetTip(this,5)">5 %</button>
+            <button class="sq-tip-btn" onclick="sqSetTip(this,10)">10 %</button>
+            <button class="sq-tip-btn" onclick="sqSetTip(this,15)">15 %</button>
+            <button class="sq-tip-btn" onclick="sqSetTip(this,20)">20 %</button>
+          </div>
+
+        </div>
+        <div class="sq-section">
+          <div class="sq-section-title">Répartition des prix</div>
+          <table class="sq-price-table">
+            <tr><td>Transfert</td><td id="sq-pt-base">—</td></tr>
+            <tr><td id="sq-pt-tip-label">Pourboire (5%)</td><td id="sq-pt-tip">—</td></tr>
+            <tr class="sq-total-row"><td>Total :</td><td id="sq-pt-total">—</td></tr>
+          </table>
+        </div>
+        <div class="sq-section">
+          <div class="sq-section-title">Paiement sécurisé</div>
+          <div class="sq-link-box">
+            <div class="sq-link-header">
+              <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500">
+                <div class="sq-link-dot"><i class="ti ti-lock" style="font-size:10px;color:#fff"></i></div>
+                Paiement sécurisé via Stripe
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span class="sq-visa-badge">VISA</span>
+                <span style="background:#1565C0;color:#fff;font-size:10px;font-weight:700;padding:3px 6px;border-radius:4px">MC</span>
+                <span style="background:#006FCF;color:#fff;font-size:10px;font-weight:700;padding:3px 6px;border-radius:4px">AMEX</span>
+              </div>
+            </div>
+            <div style="padding:14px;font-size:12px;color:#6b7280;line-height:1.6">
+              <i class="ti ti-shield-check" style="color:#16a34a;margin-right:6px"></i>
+              Vos données bancaires sont chiffrées et sécurisées par Stripe. Limo Alpes ne stocke aucune information de carte.
+            </div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:#6b7280;line-height:1.5;margin-bottom:14px">En cliquant sur "Réservez", vous acceptez nos <a href="#" style="color:#1a56db">termes et conditions</a>.</p>
+        <button class="sq-reserve-btn" id="sq-reserve-btn" onclick="sqLancerPaiement()">
+          <i class="ti ti-lock" style="margin-right:8px"></i> RÉSERVEZ — PAYER EN LIGNE
+        </button>
+        <div id="sq-stripe-error" style="display:none;margin-top:12px;background:#FEE2E2;color:#991B1B;border-radius:8px;padding:12px 14px;font-size:13px;"></div>
+      </div>
+      <div class="sq-sidebar">
+        <div class="sq-scard">
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px" id="sq-p3-trajet">—</div>
+          <div class="sq-route-dot"><div class="sq-rdot"></div><div><div style="font-size:13px;font-weight:500" id="sq-p3-dep">—</div><div style="font-size:11px;color:#6b7280" id="sq-p3-date">—</div></div></div>
+          <div class="sq-route-dot"><div class="sq-rdot end"></div><div><div style="font-size:13px;font-weight:500" id="sq-p3-dest">—</div><div style="font-size:11px;color:#6b7280" id="sq-p3-dateret"></div></div></div>
+          <div style="border-top:0.5px solid #e5e7eb;padding-top:10px;margin-top:4px;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:center;gap:10px"><i class="ti ti-clock" style="font-size:15px;color:#9ca3af"></i><div style="font-size:12px;color:#6b7280" id="sq-p3-horaire">Horaire non sélectionné</div></div>
+            <div style="display:flex;align-items:center;gap:10px"><div style="width:42px;height:28px;background:#f3f4f6;border-radius:5px;display:flex;align-items:center;justify-content:center"><i class="ti ti-bus" style="font-size:18px;color:#9ca3af"></i></div><div style="font-size:12px;font-weight:500" id="sq-p3-vehicle">—</div></div>
+          </div>
+        </div>
+        <div class="sq-scard" style="background:#f0fdf4;border-color:#bbf7d0">
+          <div style="font-size:12px;font-weight:600;color:#15803d;margin-bottom:4px"><i class="ti ti-shield-check" style="margin-right:4px"></i> Paiement 100% sécurisé</div>
+          <div style="font-size:11px;color:#16a34a;line-height:1.5">Cryptage SSL · Stripe Certified · Remboursement garanti en cas d'annulation</div>
+        </div>
+        <div class="sq-scard">
+          <div class="sq-feat"><i class="ti ti-car sq-feat-icon"></i><div><div class="sq-feat-title">Transferts privés uniquement</div><div class="sq-feat-desc">Service direct, porte-à-porte.</div></div></div>
+          <div class="sq-feat"><i class="ti ti-plane sq-feat-icon"></i><div><div class="sq-feat-title">Suivi de vol</div><div class="sq-feat-desc">Ajustement automatique de l'heure.</div></div></div>
+          <div class="sq-feat"><i class="ti ti-user-check sq-feat-icon"></i><div><div class="sq-feat-title">Chauffeurs professionnels</div><div class="sq-feat-desc">Certifiés, expérimentés et anglophones.</div></div></div>
+          <div class="sq-feat"><i class="ti ti-headset sq-feat-icon"></i><div><div class="sq-feat-title">Support 24h/24 et 7j/7</div><div class="sq-feat-desc">Disponibles avant, pendant et après.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 4 CONFIRMATION -->
+  <div class="sq-page" id="sq-page4">
+    <div class="sq-confirm-box">
+      <div class="sq-confirm-icon"><i class="ti ti-circle-check" style="font-size:36px;color:#057a55"></i></div>
+      <h2 style="font-size:22px;font-weight:500;margin-bottom:8px;font-family:'DM Sans',sans-serif">Réservation confirmée !</h2>
+      <p style="font-size:13px;color:#6b7280;font-family:'DM Sans',sans-serif">Un e-mail de confirmation a été envoyé à votre adresse.</p>
+      <div class="sq-confirm-recap">
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px;font-family:'DM Sans',sans-serif" id="sq-confirm-trajet">—</div>
+        <div style="font-size:12px;color:#6b7280;line-height:1.9;font-family:'DM Sans',sans-serif" id="sq-confirm-details">—</div>
+      </div>
+      <a href="/" class="sq-continue-btn" style="text-decoration:none;display:block;border-radius:10px;letter-spacing:0">+ Nouvelle réservation</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+
+// Stripe Checkout dynamique via fonction Netlify
+
+// ===== DONNÉES =====
+var BASE = {
+  courchevel:[380,430,550,490,1350], meribel:[380,430,550,490,1350],
+  menuires:[380,430,550,490,1350], chamonix:[380,430,550,490,1350],
+  laclusaz:[380,430,550,490,1350], valmorel:[380,430,550,490,1350],
+  valthorens:[418,473,605,539,1485], tignes:[418,473,605,539,1485],
+  valdisere:[418,473,605,539,1485], lesarcs:[418,473,605,539,1485],
+  laplagne:[418,473,605,539,1485], serrechevalier:[418,473,605,539,1485],
+  pralognan:[418,473,605,539,1485], rosiere:[418,473,605,539,1485],
+  megeve:[304,344,440,392,1080], avoriaz:[304,344,440,392,1080],
+  alpedhuez:[304,344,440,392,1080], deuxalpes:[304,344,440,392,1080],
+  geneve_ville:[304,344,440,392,1080], flaine:[304,344,440,392,1080],
+  chambery:[180,220,250,240,600], grenoble:[180,220,250,240,600], chamrousse:[180,220,250,240,600],
+  geneve_airport:[250,280,380,330,800]
+};
+
+var DEPARTS = {
+  'LYS':{mult:1,ex:{geneve_airport:1}},
+  'PARTDIEU':{mult:1,ex:{geneve_airport:1}},
+  'GVA':{mult:1,ex:{alpedhuez:1.15,deuxalpes:1.15,geneve_airport:1}},
+  'GNB_AIR':{mult:1,ex:{alpedhuez:0.80,deuxalpes:0.80,geneve_airport:1}},
+  'GNB_TRAIN':{mult:1,ex:{alpedhuez:0.80,deuxalpes:0.80,geneve_airport:1}},
+  'CMF_AIR':{mult:0.75,ex:{geneve_airport:1}},
+  'CMF_TRAIN':{mult:0.75,ex:{geneve_airport:1}},
+  'DEVIS':{mult:0,ex:{}}
+};
+
+var SAMEDIS_NOIRS = ['2026-12-19','2027-01-02','2027-02-13','2027-02-20','2027-04-17','2027-04-24'];
+
+var VEHICULES = [
+  {nom:'Berline', places:'3 places', bagages:'3 valises', minPax:1, maxPax:3, icon:'ti-car', idx:0, badge:'sq-badge-blue|Voyage avec classe', img:'https://squeed.fr/wp-content/uploads/2025/10/Mercedes-class-s.jpeg'},
+  {nom:'Van Économique', places:'8 places', bagages:'8 valises', minPax:1, maxPax:7, icon:'ti-bus', idx:1, badge:'sq-badge-green|⭐ Recommandé', img:'https://squeed.fr/wp-content/uploads/2024/05/opel-vivaro-snow.webp'},
+  {nom:'Van Mercedes Vito', places:'8 places', bagages:'8 valises', minPax:1, maxPax:8, icon:'ti-bus', idx:3, badge:'sq-badge-amber|⭐ Meilleure vente', img:'https://squeed.fr/wp-content/uploads/2024/05/VTC-Paris.jpg'},
+  {nom:'Van Mercedes V-Class', places:'7 places', bagages:'7 valises', minPax:1, maxPax:7, icon:'ti-bus', idx:2, badge:'sq-badge-amber|✨ Premium', img:'https://squeed.fr/wp-content/uploads/2024/05/Classe-V.png'},
+  {nom:'Minibus Sprinter', places:'24 places', bagages:'20 valises', minPax:1, maxPax:24, icon:'ti-bus', idx:4, badge:'sq-badge-green|👥 Grands groupes', img:'https://squeed.fr/wp-content/uploads/2023/11/image-minibus.png'},
+  {nom:'Car 46 places', places:'46 places', bagages:'46 valises', minPax:1, maxPax:999, icon:'ti-bus', idx:-1, badge:'sq-badge-blue|🚌 Sur devis', img:'https://squeed.fr/wp-content/uploads/2024/05/autocar-ski.webp'}
+];
+
+var PLACES_AC = [
+  {icon:'ti-plane',name:"Lyon Airport LYS",code:'LYS',depKey:'LYS',destKey:''},
+  {icon:'ti-plane',name:"Grenoble Alpes Isère Airport",code:'GNB',depKey:'GNB_AIR',destKey:''},
+  {icon:'ti-plane',name:"Chambéry Savoie Airport",code:'CMF',depKey:'CMF_AIR',destKey:''},
+  {icon:'ti-plane',name:"Genève International Airport",code:'GVA',depKey:'GVA',destKey:'geneve_airport'},
+  {icon:'ti-plane',name:"Nice Côte d'Azur Airport",code:'NCE',depKey:'DEVIS',destKey:'devis_ville'},
+  {icon:'ti-plane',name:"Marseille Provence Airport",code:'MRS',depKey:'DEVIS',destKey:'devis_ville'},
+  {icon:'ti-plane',name:"Paris Charles de Gaulle Airport",code:'CDG',depKey:'DEVIS',destKey:'devis_ville'},
+  {icon:'ti-plane',name:"Paris Orly Airport",code:'ORY',depKey:'DEVIS',destKey:'devis_ville'},
+  {icon:'ti-train',name:"Lyon Part-Dieu Train Station",code:'LYS',depKey:'PARTDIEU',destKey:''},
+  {icon:'ti-train',name:"Grenoble Train Station",code:'GNB',depKey:'GNB_TRAIN',destKey:''},
+  {icon:'ti-train',name:"Chambéry Train Station",code:'CMF',depKey:'CMF_TRAIN',destKey:''},
+  {icon:'ti-train',name:"Genève Cornavin Train Station",code:'GVA',depKey:'GVA',destKey:''},
+  {icon:'ti-mountain',name:"Courchevel 1850",code:'SKI',depKey:'',destKey:'courchevel'},
+  {icon:'ti-mountain',name:"Courchevel Village",code:'SKI',depKey:'',destKey:'courchevel'},
+  {icon:'ti-mountain',name:"Méribel",code:'SKI',depKey:'',destKey:'meribel'},
+  {icon:'ti-mountain',name:"Méribel-Mottaret",code:'SKI',depKey:'',destKey:'meribel'},
+  {icon:'ti-mountain',name:"Val Thorens",code:'SKI',depKey:'',destKey:'valthorens'},
+  {icon:'ti-mountain',name:"Les Menuires",code:'SKI',depKey:'',destKey:'menuires'},
+  {icon:'ti-mountain',name:"Tignes",code:'SKI',depKey:'',destKey:'tignes'},
+  {icon:'ti-mountain',name:"Val d'Isère",code:'SKI',depKey:'',destKey:'valdisere'},
+  {icon:'ti-mountain',name:"Les Arcs",code:'SKI',depKey:'',destKey:'lesarcs'},
+  {icon:'ti-mountain',name:"La Plagne",code:'SKI',depKey:'',destKey:'laplagne'},
+  {icon:'ti-mountain',name:"Serre Chevalier",code:'SKI',depKey:'',destKey:'serrechevalier'},
+  {icon:'ti-mountain',name:"Chamonix",code:'SKI',depKey:'',destKey:'chamonix'},
+  {icon:'ti-mountain',name:"Megève",code:'SKI',depKey:'',destKey:'megeve'},
+  {icon:'ti-mountain',name:"Avoriaz / Les Gets",code:'SKI',depKey:'',destKey:'avoriaz'},
+  {icon:'ti-mountain',name:"Alpe d'Huez",code:'SKI',depKey:'',destKey:'alpedhuez'},
+  {icon:'ti-mountain',name:"Les Deux Alpes",code:'SKI',depKey:'',destKey:'deuxalpes'},
+  {icon:'ti-mountain',name:"La Clusaz",code:'SKI',depKey:'',destKey:'laclusaz'},
+  {icon:'ti-mountain',name:"Flaine / Samoëns",code:'SKI',depKey:'',destKey:'flaine'},
+  {icon:'ti-mountain',name:"Valmorel",code:'SKI',depKey:'',destKey:'valmorel'},
+  {icon:'ti-mountain',name:"La Rosière",code:'SKI',depKey:'',destKey:'rosiere'},
+  {icon:'ti-mountain',name:"Moutiers",code:'SKI',depKey:'',destKey:'menuires'},
+  {icon:'ti-building',name:"Chambéry",code:'FR',depKey:'',destKey:'chambery'},
+  {icon:'ti-building',name:"Grenoble",code:'FR',depKey:'',destKey:'grenoble'},
+  {icon:'ti-building',name:"Genève",code:'CH',depKey:'',destKey:'geneve_ville'},
+  {icon:'ti-building',name:"Nice",code:'FR',depKey:'',destKey:'devis_ville'},
+  {icon:'ti-building',name:"Monaco",code:'MC',depKey:'',destKey:'devis_ville'},
+  {icon:'ti-building',name:"Paris",code:'FR',depKey:'',destKey:'devis_ville'},
+  {icon:'ti-building',name:"Marseille",code:'FR',depKey:'',destKey:'devis_ville'},
+  {icon:'ti-building',name:"Saint-Tropez",code:'FR',depKey:'',destKey:'devis_ville'},
+  {icon:'ti-building',name:"Cannes",code:'FR',depKey:'',destKey:'devis_ville'}
+];
+
+var sqState = {dep:'LYS',depnom:'Lyon Airport LYS',dest:'',destnom:'',date:'',dateret:'',retour:true,pax:1,vehicleNom:'—',prixBase:0,tipPct:0,cancelOn:true,totalFinal:0};
+
+function isSamediNoir(d){return SAMEDIS_NOIRS.indexOf(d)!==-1;}
+function isSamedi(d){if(!d)return false;return new Date(d).getDay()===6;}
+function getMajo(d){if(!isSamedi(d))return{taux:0,label:''};if(isSamediNoir(d))return{taux:0.30,label:'NOIR'};return{taux:0,label:''};}
+function fmtDate(d){if(!d)return '—';return new Date(d).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
+
+function calcPrix(dep,dest,date,idx){
+  if(!dep||!dest||!BASE[dest]||!DEPARTS[dep])return null;
+  var di=DEPARTS[dep];
+  var mult=di.ex[dest]!==undefined?di.ex[dest]:di.mult;
+  if(mult===0)return null;
+  var p=BASE[dest][idx]*mult;
+  var m=getMajo(date);
+  if(m.taux>0)p*=(1+m.taux);
+  return Math.round(p);
+}
+
+function renderVehicles(){
+  var list=document.getElementById('sq-vehicles-list');
+  if(!list)return;
+  list.innerHTML='';
+  var pax=sqState.pax||1;
+  var m=getMajo(sqState.date);
+  var banner=document.getElementById('sq-majo-banner');
+  if(banner){banner.innerHTML=m.label==='NOIR'?'<div class="sq-majo-banner"><i class="ti ti-alert-circle"></i> <strong>Samedi Noir</strong> — Majoration de 30% appliquée sur tous les tarifs.</div>':'';}
+  var isDevis=!sqState.dest||!BASE[sqState.dest]||!DEPARTS[sqState.dep]||DEPARTS[sqState.dep].mult===0;
+  var firstVisible=true;
+  VEHICULES.forEach(function(v){
+    if(v.maxPax && pax > v.maxPax) return;
+    if(pax>24&&v.nom==='Minibus Sprinter')return;
+
+    var card=document.createElement('div');
+    card.className='sq-vcard'+(firstVisible?' selected':'');
+    if(firstVisible){sqState.vehicleNom=v.nom;if(v.idx>=0&&!isDevis){sqState.prixBase=calcPrix(sqState.dep,sqState.dest,sqState.date,v.idx)||0;updatePriceTable();}var sv=document.getElementById('sq-sidebar-vehicle');if(sv)sv.textContent=v.nom;}
+    firstVisible=false;
+
+    card.onclick=function(){
+      document.querySelectorAll('.sq-vcard').forEach(function(c){c.classList.remove('selected');});
+      card.classList.add('selected');
+      sqState.vehicleNom=v.nom;
+      if(v.idx>=0&&!isDevis){sqState.prixBase=calcPrix(sqState.dep,sqState.dest,sqState.date,v.idx)||0;updatePriceTable();}
+      var sv=document.getElementById('sq-sidebar-vehicle');if(sv)sv.textContent=v.nom;
+      document.getElementById('sq-p2-vehicle').textContent=v.nom;
+      document.getElementById('sq-p3-vehicle').textContent=v.nom;
+    };
+
+    var bp=v.badge?v.badge.split('|'):null;
+    var bh=bp?'<span class="sq-badge '+bp[0]+'">'+bp[1]+'</span>':'';
+    var ph='';
+    if(v.idx===-1||isDevis){ph='<div class="sq-price-devis">Sur devis</div>';}
+    else{
+      var px=calcPrix(sqState.dep,sqState.dest,sqState.date,v.idx);
+      if(px===null){ph='<div class="sq-price-devis">Sur devis</div>';}
+      else{
+        if(sqState.retour){var pxAR=px*2;var pxARb=Math.round(pxAR*1.15);ph='<div class="sq-price-old">EUR '+pxARb+'</div>';ph+='<div class="sq-price-new">EUR '+pxAR+'</div>';ph+='<div class="sq-price-retour">Aller-retour inclus</div>';}
+        else{var pxB=Math.round(px*1.15);var pxR=Math.round(px*0.90);ph='<div class="sq-price-old">EUR '+pxB+'</div>';ph+='<div class="sq-price-new">EUR '+px+'</div>';ph+='<div class="sq-price-retour" style="color:#16a34a;font-size:11px;margin-top:3px">Retour inclus : <strong>EUR '+pxR+'</strong> <span style="background:#DEF7EC;color:#03543F;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">-10%</span></div>';}
+      }
+    }
+
+    card.innerHTML='<div class="sq-vcard-row">'
+      +'<div class="sq-vcar-img"><img src="'+v.img+'" alt="'+v.nom+'" onerror="this.style.display=\'none\'"><i class="ti '+v.icon+'" style="display:none;font-size:28px;color:#9ca3af"></i></div>'
+      +'<div class="sq-vcard-info">'
+        +'<div class="sq-vcard-name">'+v.nom+'</div>'
+        +bh
+        +'<div class="sq-vcard-meta">'
+          +'<span><i class="ti ti-users"></i> '+v.places+'</span>'
+          +'<span style="color:#d1d5db;margin:0 4px">|</span>'
+          +'<span><i class="ti ti-briefcase"></i> '+v.bagages+'</span>'
+        +'</div>'
+      +'</div>'
+      +'<div class="sq-vcard-price">'+ph+'<button class="sq-sel-btn" onclick="event.stopPropagation();sqGoTo(2)">Sélectionner</button></div>'
+      +'</div>';
+    list.appendChild(card);
+  });
+
+  if(list.children.length===0){list.innerHTML='<div class="sq-info-bar" style="background:#FEF3C7;color:#92400E"><i class="ti ti-info-circle"></i> Aucun véhicule disponible pour '+pax+' passagers. Contactez-nous pour un devis.</div>';}
+  updatePriceTable();
+}
+
+function updateSidebars(){
+  var dep=sqState.depnom||'—';var dest=sqState.destnom||'—';var d=fmtDate(sqState.date);
+  // Sync depuis le champ si disponible, sinon depuis sqState
+  var retField=document.getElementById('sqRDateRet');
+  var dateRetVal = (retField&&retField.value) ? retField.value : sqState.dateret;
+  if(dateRetVal) sqState.dateret = dateRetVal;
+  var dret = sqState.dateret ? 'Retour : '+fmtDate(sqState.dateret) : '';
+  var trajet=dep+' → '+dest;
+  ['sq-sidebar-dep','sq-sidebar-dep2','sq-p2-dep','sq-p3-dep'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=dep;});
+  ['sq-sidebar-dest','sq-p2-dest','sq-p3-dest'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=dest;});
+  ['sq-sidebar-date','sq-p2-date','sq-p3-date'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=d;});
+  ['sq-sidebar-dateret','sq-p2-dateret','sq-p3-dateret'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=dret;});
+  ['sq-p2-trajet','sq-p3-trajet'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=trajet;});
+  var ci=document.getElementById('sq-confirm-trajet');if(ci)ci.innerHTML='<i class="ti ti-map-pin" style="color:#1a56db"></i> '+trajet;
+}
+
+function updatePriceTable(){
+  var base=sqState.prixBase||0;
+  var tip=Math.round(base*sqState.tipPct/100*100)/100;
+  var total=Math.round((base+tip)*100)/100;
+  sqState.totalFinal=total;
+  function s(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  s('sq-pt-base','EUR '+base);
+  s('sq-pt-tip','EUR '+tip.toFixed(2));
+  s('sq-pt-tip-label','Pourboire ('+sqState.tipPct+'%)');s('sq-pt-total','EUR '+total.toFixed(2));
+  s('sq-tip-label',sqState.tipPct+'% du trajet — EUR '+tip.toFixed(2));
+  var cd=document.getElementById('sq-confirm-details');
+  if(cd)cd.innerHTML='Date : <strong style="color:#111">'+fmtDate(sqState.date)+'</strong><br>Véhicule : <strong style="color:#111">'+sqState.vehicleNom+'</strong><br>Total : <strong style="color:#111">EUR '+total.toFixed(2)+'</strong>';
+  // Mettre à jour le bouton réserver
+  var btn=document.getElementById('sq-reserve-btn');
+  if(btn&&total>0)btn.innerHTML='<i class="ti ti-lock" style="margin-right:8px"></i> RÉSERVEZ — EUR '+total.toFixed(2);
+}
+
+// ===== PAIEMENT STRIPE CHECKOUT =====
+window.sqLancerPaiement = async function(){
+  var errDiv = document.getElementById('sq-stripe-error');
+  errDiv.style.display = 'none';
+
+  var total = sqState.totalFinal;
+  if(!total || total <= 0){
+    errDiv.style.display = 'block';
+    errDiv.textContent = 'Veuillez sélectionner un trajet et un véhicule avant de payer.';
+    return;
+  }
+
+  var overlay = document.getElementById('sq-stripe-overlay');
+  var btn = document.getElementById('sq-reserve-btn');
+  overlay.classList.add('active');
+  if(btn) btn.disabled = true;
+
+  try {
+    var payload = {
+      montant: total,
+      depart: sqState.depnom || '',
+      destination: sqState.destnom || '',
+      vehicule: sqState.vehicleNom || '',
+      date: fmtDate(sqState.date),
+      pax: sqState.pax || 1,
+      email: document.getElementById('p2-email') ? document.getElementById('p2-email').value : '',
+      prenom: document.getElementById('p2-prenom') ? document.getElementById('p2-prenom').value : '',
+      nom: document.getElementById('p2-nom') ? document.getElementById('p2-nom').value : '',
+      telephone: document.getElementById('p2-tel') ? document.getElementById('p2-tel').value : '',
+    };
+
+    var response = await fetch('https://luxury-mooncake-0a5563.netlify.app/.netlify/functions/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    var result = await response.json();
+
+    if(result.url){
+      window.location.href = result.url;
+    } else {
+      throw new Error(result.error || 'Erreur inconnue');
+    }
+  } catch(err) {
+    overlay.classList.remove('active');
+    if(btn) btn.disabled = false;
+    errDiv.style.display = 'block';
+    errDiv.textContent = 'Erreur lors du paiement : ' + err.message + '. Veuillez réessayer.';
+  }
+};
+
+// AUTOCOMPLETE
+function showAC(ddId,val,isDepField){
+  var dd=document.getElementById(ddId);if(!dd)return;
+  if(!val||val.length<2){dd.classList.remove('open');dd.innerHTML='';return;}
+  var q=val.toLowerCase();
+  var matches=PLACES_AC.filter(function(p){return p.name.toLowerCase().indexOf(q)!==-1;}).slice(0,7);
+  if(!matches.length){dd.classList.remove('open');return;}
+  dd.innerHTML=matches.map(function(p,i){
+    return '<div class="sq-rdd-item'+(i===0?' first':'')+'" onmousedown="sqPickAC(\''+ddId+'\',\''+p.name.replace(/'/g,"\\'")+'\',\''+p.depKey+'\',\''+p.destKey+'\','+isDepField+')">'
+      +'<i class="ti '+p.icon+'"></i><span>'+p.name+' <span style="color:#9ca3af;font-size:11px">('+p.code+')</span></span></div>';
+  }).join('');
+  dd.classList.add('open');
+}
+
+window.sqPickAC=function(ddId,name,depKey,destKey,isDepField){
+  if(isDepField){
+    document.getElementById('sqRDep').value=name;
+    sqState.dep=depKey||'DEVIS';sqState.depnom=name;
+  } else {
+    document.getElementById('sqRVers').value=name;
+    sqState.dest=destKey||'devis_ville';sqState.destnom=name;
+  }
+  var dd=document.getElementById(ddId);if(dd)dd.classList.remove('open');
+  renderVehicles();updateSidebars();
+};
+
+function initAC(){
+  var depIn=document.getElementById('sqRDep');
+  var versIn=document.getElementById('sqRVers');
+  if(depIn){
+    depIn.addEventListener('input',function(){showAC('sqRDdDep',this.value,true);});
+    depIn.addEventListener('focus',function(){showAC('sqRDdDep',this.value,true);});
+    depIn.addEventListener('blur',function(){setTimeout(function(){var d=document.getElementById('sqRDdDep');if(d)d.classList.remove('open');},200);});
+  }
+  if(versIn){
+    versIn.addEventListener('input',function(){showAC('sqRDdVers',this.value,false);});
+    versIn.addEventListener('focus',function(){showAC('sqRDdVers',this.value,false);});
+    versIn.addEventListener('blur',function(){setTimeout(function(){var d=document.getElementById('sqRDdVers');if(d)d.classList.remove('open');},200);});
+  }
+}
+
+window.sqUpdateMinRetour = function(depDate) {
+  var retInput = document.getElementById('sqRDateRet');
+  if (!retInput) return;
+  retInput.min = depDate;
+  if (retInput.value && retInput.value < depDate) {
+    retInput.value = depDate;
+    sqState.dateret = depDate;
+  }
+};
+
+function sqSetMinDates() {
+  var today = new Date().toISOString().split('T')[0];
+  var depInput = document.getElementById('sqRDateDep');
+  var retInput = document.getElementById('sqRDateRet');
+  if (depInput) {
+    depInput.min = today;
+    if (depInput.value && depInput.value < today) depInput.value = today;
+  }
+  if (retInput) {
+    var minRet = (depInput && depInput.value) ? depInput.value : today;
+    retInput.min = minRet;
+    if (retInput.value && retInput.value < minRet) retInput.value = minRet;
+  }
+}
+
+function initFromURL(){
+  var p=new URLSearchParams(window.location.search);
+  sqState.dep=p.get('dep')||'LYS';
+  sqState.depnom=p.get('depnom')||'Lyon Airport LYS';
+  sqState.dest=p.get('dest')||'';
+  sqState.destnom=p.get('destnom')||'';
+  sqState.date=p.get('date')||new Date().toISOString().split('T')[0];
+  sqState.dateret=p.get('dateret')||'';
+  sqState.retour=p.get('retour')!=='0';
+  sqState.pax=parseInt(p.get('pax')||'1');
+
+  var rdep=document.getElementById('sqRDep');
+  var rvers=document.getElementById('sqRVers');
+  var rdatedep=document.getElementById('sqRDateDep');
+  var rdateret=document.getElementById('sqRDateRet');
+  var rpax=document.getElementById('sqRPaxCount');
+
+  if(rdep)rdep.value=sqState.depnom;
+  if(rvers)rvers.value=sqState.destnom;
+  if(rdatedep)rdatedep.value=sqState.date;
+  if(rdateret&&sqState.dateret)rdateret.value=sqState.dateret;
+  // Si dateret dans URL mais champ vide, forcer la valeur
+  if(rdateret&&!rdateret.value&&sqState.dateret)rdateret.value=sqState.dateret;
+  if(rpax)rpax.textContent=sqState.pax;
+
+  if(!sqState.retour){
+    var rf=document.getElementById('sqRRetourField');if(rf)rf.style.display='none';
+    var t1=document.getElementById('sq-tab-retour');if(t1)t1.classList.remove('active');
+    var t2=document.getElementById('sq-tab-simple');if(t2)t2.classList.add('active');
+  }
+
+  // Sync dateret depuis le champ si pas dans URL
+  var retField = document.getElementById('sqRDateRet');
+  if(retField && retField.value && !sqState.dateret) sqState.dateret = retField.value;
+  if(retField && sqState.dateret) retField.value = sqState.dateret;
+  sqSetMinDates();updateSidebars();renderVehicles();initAC();
+  // Afficher section horaire retour si aller-retour — après rendu
+  var secRet = document.getElementById('sq-section-retour');
+  if(secRet) secRet.style.display = sqState.retour ? 'block' : 'none';
+}
+
+window.sqUpdateHoraire = function(){
+  var h = document.getElementById('p2-heure');
+  var m = document.getElementById('p2-minute');
+  var hv = h && h.value !== 'Horaires' ? h.value.replace(':00','') : '';
+  var mv = m && m.value !== 'Minute' ? m.value : '';
+  var label = hv && mv ? hv + 'h' + mv : 'Horaire non sélectionné';
+
+  var hr = document.getElementById('p2-heure-ret');
+  var mr = document.getElementById('p2-minute-ret');
+  var hrv = hr && hr.value !== 'Horaires' ? hr.value.replace(':00','') : '';
+  var mrv = mr && mr.value !== 'Minute' ? mr.value : '';
+  var labelRet = hrv && mrv ? ' · Retour ' + hrv + 'h' + mrv : '';
+
+  var full = label + (sqState.retour ? labelRet : '');
+  ['sq-sidebar-horaire','sq-p2-horaire','sq-p3-horaire'].forEach(function(id){
+    var e=document.getElementById(id);if(e)e.textContent=full;
+  });
+};
+
+window.sqValiderEtape2 = function(){
+  var errDiv = document.getElementById('sq-stripe-error');
+  
+  var heure = document.getElementById('p2-heure');
+  var minute = document.getElementById('p2-minute');
+  var adresse = document.getElementById('p2-adresse');
+  var prenom = document.getElementById('p2-prenom');
+  var nom = document.getElementById('p2-nom');
+  var email = document.getElementById('p2-email');
+  var tel = document.getElementById('p2-tel');
+  
+  var errors = [];
+  if(!heure || heure.value === 'Horaires') errors.push('Veuillez sélectionner un horaire aller.');
+  if(sqState.retour){
+    var heureRet = document.getElementById('p2-heure-ret');
+    var minRet = document.getElementById('p2-minute-ret');
+    if(!heureRet || heureRet.value === 'Horaires') errors.push('Veuillez sélectionner un horaire retour.');
+    if(!minRet || minRet.value === 'Minute') errors.push('Veuillez sélectionner les minutes du retour.');
+  }
+  if(!minute || minute.value === 'Minute') errors.push('Veuillez sélectionner les minutes aller.');
+  if(!adresse || adresse.value.trim() === '') errors.push('Veuillez entrer le lieu de dépose.');
+  if(!prenom || prenom.value.trim() === '') errors.push('Veuillez entrer votre prénom.');
+  if(!nom || nom.value.trim() === '') errors.push('Veuillez entrer votre nom.');
+  if(!email || email.value.trim() === '' || !email.value.includes('@')) errors.push('Veuillez entrer une adresse e-mail valide.');
+  if(!tel || tel.value.trim() === '') errors.push('Veuillez entrer votre numéro de téléphone.');
+
+  var errP2 = document.getElementById('sq-p2-error');
+  if(!errP2){
+    errP2 = document.createElement('div');
+    errP2.id = 'sq-p2-error';
+    errP2.style.cssText = 'background:#FEE2E2;color:#991B1B;border-radius:8px;padding:12px 14px;font-size:13px;margin-bottom:12px;';
+    var continueBtn = document.querySelector('.sq-continue-btn');
+    if(continueBtn) continueBtn.parentNode.insertBefore(errP2, continueBtn);
+  }
+
+  if(errors.length > 0){
+    errP2.style.display = 'block';
+    errP2.innerHTML = '<strong>Informations manquantes :</strong><br>' + errors.join('<br>');
+    errP2.scrollIntoView({behavior:'smooth', block:'center'});
+    [heure, minute, adresse, prenom, nom, email, tel].forEach(function(el){
+      if(el) el.style.borderColor = (el.value.trim() === '' || el.value === 'Horaires' || el.value === 'Minute') ? '#ef4444' : '';
+    });
+    return;
+  }
+
+  errP2.style.display = 'none';
+  sqGoTo(3);
+};
+
+window.sqGoTo=function(n){
+  document.querySelectorAll('.sq-page').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('sq-page'+n).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  // Sync véhicule dans toutes les sidebars
+  var vnom = sqState.vehicleNom||'—';
+  ['sq-sidebar-vehicle','sq-p2-vehicle','sq-p3-vehicle'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=vnom;});
+  // Afficher horaire retour si aller-retour
+  var secRet = document.getElementById('sq-section-retour');
+  if(secRet) secRet.style.display = sqState.retour ? 'block' : 'none';
+  for(var i=1;i<=3;i++){
+    var sn=document.getElementById('sq-sn'+i);var sl=document.getElementById('sq-sl'+i);var ln=document.getElementById('sq-line'+i);
+    if(i<n){sn.className='sq-step-num done';sn.innerHTML='<i class="ti ti-check" style="font-size:11px"></i>';sl.className='sq-step-label done';if(ln)ln.className='sq-step-line done';}
+    else if(i===n){sn.className='sq-step-num active';sn.innerHTML=i;sl.className='sq-step-label active';}
+    else{sn.className='sq-step-num todo';sn.innerHTML=i;sl.className='sq-step-label todo';if(ln)ln.className='sq-step-line todo';}
+  }
+  var st=document.getElementById('sq-stepper');if(st)st.style.display=n===4?'none':'flex';
+  var rb=document.getElementById('sq-recap-bar');if(rb)rb.style.display=n===4?'none':'block';
+  updatePriceTable();
+};
+
+window.sqRefreshPrix=function(){
+  sqState.depnom=document.getElementById('sqRDep').value;
+  sqState.destnom=document.getElementById('sqRVers').value;
+  sqState.date=document.getElementById('sqRDateDep').value;
+  sqState.dateret=document.getElementById('sqRDateRet').value;
+  sqState.pax=parseInt(document.getElementById('sqRPaxCount').textContent)||1;
+  var tabRetour=document.getElementById('sq-tab-retour');
+  sqState.retour=tabRetour&&tabRetour.classList.contains('active');
+  updateSidebars();renderVehicles();
+};
+
+window.sqRTab=function(el,mode){
+  document.querySelectorAll('.sq-recap-tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');sqState.retour=mode==='retour';
+  renderVehicles();
+  var rf=document.getElementById('sqRRetourField');if(rf)rf.style.display=mode==='retour'?'':'none';var secRet=document.getElementById('sq-section-retour');if(secRet)secRet.style.display=mode==='retour'?'block':'none';
+};
+
+var sqRPaxVal=1;
+window.sqRPax=function(d){sqRPaxVal=Math.max(1,Math.min(50,sqRPaxVal+d));document.getElementById('sqRPaxCount').textContent=sqRPaxVal;sqState.pax=sqRPaxVal;renderVehicles();};
+window.sqRSwap=function(){var a=document.getElementById('sqRDep'),b=document.getElementById('sqRVers');var t=a.value;a.value=b.value;b.value=t;};
+window.sqToggleCb=function(el){el.classList.toggle('checked');el.innerHTML=el.classList.contains('checked')?'<i class="ti ti-check" style="font-size:12px;color:#fff"></i>':'';};
+window.sqSetTip=function(btn,pct){document.querySelectorAll('.sq-tip-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');sqState.tipPct=pct;updatePriceTable();};
+window.sqToggleCancel=function(){sqState.cancelOn=!sqState.cancelOn;var cb=document.getElementById('sq-cancelCb');cb.style.background=sqState.cancelOn?'#1a56db':'#f3f4f6';cb.innerHTML=sqState.cancelOn?'<i class="ti ti-check" style="font-size:12px;color:#fff"></i>':'';updatePriceTable();};
+
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initFromURL);}
+else{setTimeout(initFromURL,50);}
+
+})();
+</script>
+</body>
+</html>
