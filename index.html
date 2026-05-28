@@ -655,7 +655,7 @@ window.sqLancerPaiement = async function(){
       telephone: document.getElementById('p2-tel') ? document.getElementById('p2-tel').value : '',
     };
 
-    var response = await fetch('https://luxury-mooncake-0a5563.netlify.app/.netlify/functions/create-checkout', {
+    var response = await fetch('https://reservation.squeed.fr/api/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
