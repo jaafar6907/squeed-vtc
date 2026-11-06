@@ -42,6 +42,29 @@ module.exports = async function handler(req, res) {
       `${modeLabel} | ${depart} → ${destination} | ${vehicule} | ${date}${horaireStr}` +
       `${dateret ? retourLabel + dateret + horaireRetourStr : ''} | ${pax} ${paxLabel}`;
 
+    // Client Stripe : pré-remplit le nom, l'e-mail et le téléphone sur la page de paiement
+    const nomComplet = [data.prenom, data.nom].filter(Boolean).join(' ').trim();
+    let customerId;
+    if (data.email) {
+      try {
+        const infos = {
+          name: nomComplet || undefined,
+          phone: (data.telephone || '').trim() || undefined,
+          preferred_locales: [en ? 'en' : 'fr'],
+        };
+        const existants = await stripe.customers.list({ email: data.email, limit: 1 });
+        if (existants.data.length) {
+          customerId = existants.data[0].id;
+          await stripe.customers.update(customerId, infos);
+        } else {
+          customerId = (await stripe.customers.create({ email: data.email, ...infos })).id;
+        }
+      } catch (e) {
+        console.error('Client Stripe non créé:', e.message);
+        customerId = undefined; // on continue quand même avec le simple e-mail
+      }
+    }
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{
@@ -49,14 +72,16 @@ module.exports = async function handler(req, res) {
           currency: 'eur',
           product_data: {
             name: en ? 'Private transfer — Squeed' : 'Transfert VTC — Squeed',
-            description: descriptionLine.slice(0, 1000),
+            description: ((nomComplet ? nomComplet + ' | ' : '') + descriptionLine).slice(0, 1000),
           },
           unit_amount: Math.round(montant * 100),
         },
         quantity: 1,
       }],
       mode: 'payment',
-      customer_email: data.email || undefined,
+      ...(customerId
+        ? { customer: customerId, customer_update: { name: 'auto', address: 'auto' } }
+        : { customer_email: data.email || undefined }),
       billing_address_collection: 'required',
       phone_number_collection: { enabled: true },
       metadata: {
