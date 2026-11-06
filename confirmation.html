@@ -3,59 +3,119 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
 <title>Réservation confirmée — Squeed</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'DM Sans', sans-serif; background: #f9fafb; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.box { background: #fff; border-radius: 16px; border: 0.5px solid rgba(0,0,0,0.08); padding: 48px 40px; text-align: center; max-width: 520px; width: 100%; }
+body { font-family: 'DM Sans', sans-serif; background: #f9fafb; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; color: #111; }
+.box { background: #fff; border-radius: 16px; border: 0.5px solid rgba(0,0,0,0.08); padding: 48px 40px; text-align: center; max-width: 560px; width: 100%; }
 .icon { width: 72px; height: 72px; border-radius: 50%; background: #DEF7EC; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
 h1 { font-size: 22px; font-weight: 500; margin-bottom: 8px; }
-.sub { font-size: 13px; color: #6b7280; margin-bottom: 24px; }
+.sub { font-size: 13px; color: #6b7280; margin-bottom: 24px; line-height: 1.6; }
 .recap { background: #f9fafb; border-radius: 10px; padding: 16px 20px; text-align: left; margin-bottom: 24px; }
-.recap-row { font-size: 13px; color: #6b7280; padding: 4px 0; display: flex; justify-content: space-between; }
-.recap-row span { color: #111; font-weight: 500; }
+.recap-row { font-size: 13px; color: #6b7280; padding: 5px 0; display: flex; justify-content: space-between; gap: 16px; }
+.recap-row span { color: #111; font-weight: 500; text-align: right; }
+.recap-total { border-top: 0.5px solid #e5e7eb; margin-top: 8px; padding-top: 10px; font-size: 14px; font-weight: 600; color: #111; }
+.recap-total span { color: #16a34a; }
 .btn { display: block; width: 100%; background: #1a56db; color: #fff; border: none; border-radius: 10px; padding: 14px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; text-decoration: none; text-align: center; }
 .btn:hover { background: #1e40af; }
+.contact { margin-top: 16px; font-size: 12px; color: #6b7280; }
+.contact a { color: #1a56db; text-decoration: none; }
 .loading { color: #6b7280; font-size: 13px; }
+@media (max-width: 480px) { .box { padding: 32px 20px; } .recap-row { flex-direction: column; gap: 2px; } .recap-row span { text-align: left; } }
 </style>
 </head>
 <body>
 <div class="box">
   <div class="icon"><i class="ti ti-circle-check" style="font-size:36px;color:#057a55"></i></div>
-  <h1>Réservation confirmée !</h1>
-  <p class="sub">Un e-mail de confirmation a été envoyé à votre adresse.<br>L'équipe Squeed vous contactera sous peu.</p>
+  <h1 id="t-title">Réservation confirmée !</h1>
+  <p class="sub" id="t-sub">Un e-mail de confirmation a été envoyé à votre adresse.<br>L'équipe Squeed vous contactera sous peu.</p>
   <div class="recap" id="recap">
-    <div class="loading"><i class="ti ti-loader" style="margin-right:6px"></i> Chargement des détails...</div>
+    <div class="loading" id="t-loading"><i class="ti ti-loader" style="margin-right:6px"></i> Chargement des détails…</div>
   </div>
-  <a href="index.html" class="btn">+ Nouvelle réservation</a>
+  <a href="https://squeed.fr/reservation/" class="btn" id="t-btn">+ Nouvelle réservation</a>
+  <p class="contact" id="t-contact">Une question ? <a href="https://wa.me/33629392631">WhatsApp</a> ou <a href="tel:+33629392631">+33 6 29 39 26 31</a></p>
 </div>
 <script>
 (async function(){
   var params = new URLSearchParams(window.location.search);
   var sessionId = params.get('session_id');
   var recap = document.getElementById('recap');
-  if(!sessionId){
-    recap.innerHTML = '<div class="recap-row">Merci pour votre réservation !</div>';
-    return;
-  }
-  try {
-    var res = await fetch('/api/get-session?session_id=' + sessionId);
-    var data = await res.json();
-    if(data && data.metadata){
-      var m = data.metadata;
-      recap.innerHTML =
-        '<div class="recap-row">Trajet <span>' + (m.depart||'—') + ' → ' + (m.destination||'—') + '</span></div>' +
-        '<div class="recap-row">Véhicule <span>' + (m.vehicule||'—') + '</span></div>' +
-        '<div class="recap-row">Date <span>' + (m.date||'—') + '</span></div>' +
-        '<div class="recap-row">Passagers <span>' + (m.pax||'—') + '</span></div>' +
-        '<div class="recap-row" style="border-top:0.5px solid #e5e7eb;margin-top:8px;padding-top:10px;font-size:14px;font-weight:600;color:#111">Total payé <span style="color:#16a34a">EUR ' + (data.amount_total ? (data.amount_total/100).toFixed(2) : '—') + '</span></div>';
-    } else {
-      recap.innerHTML = '<div class="recap-row">Paiement reçu avec succès. Merci !</div>';
+
+  var TXT = {
+    fr: {
+      doc: 'Réservation confirmée — Squeed',
+      title: 'Réservation confirmée !',
+      sub: 'Un e-mail de confirmation a été envoyé à votre adresse.<br>L\'équipe Squeed vous contactera sous peu.',
+      loading: 'Chargement des détails…',
+      btn: '+ Nouvelle réservation',
+      btnUrl: 'https://squeed.fr/reservation/',
+      contact: 'Une question ? <a href="https://wa.me/33629392631">WhatsApp</a> ou <a href="tel:+33629392631">+33 6 29 39 26 31</a>',
+      trajet: 'Trajet', vehicule: 'Véhicule', date: 'Date', heure: 'Heure', retour: 'Retour', vol: 'Vol / train',
+      adresse: 'Dépose', equip: 'Équipements', pax: 'Passagers', total: 'Total payé',
+      merci: 'Merci pour votre réservation !', ok: 'Paiement reçu avec succès. Merci !'
+    },
+    en: {
+      doc: 'Booking confirmed — Squeed',
+      title: 'Booking confirmed',
+      sub: 'We\'ve sent a confirmation email to your address.<br>The Squeed team will be in touch shortly.',
+      loading: 'Loading your booking…',
+      btn: '+ New booking',
+      btnUrl: 'https://ski.squeed.fr/book/',
+      contact: 'Any question? <a href="https://wa.me/33629392631">WhatsApp</a> or <a href="tel:+33629392631">+33 6 29 39 26 31</a>',
+      trajet: 'Route', vehicule: 'Vehicle', date: 'Date', heure: 'Time', retour: 'Return', vol: 'Flight / train',
+      adresse: 'Drop-off', equip: 'Extras', pax: 'Passengers', total: 'Total paid',
+      merci: 'Thank you for your booking!', ok: 'Payment received. Thank you!'
     }
-  } catch(e) {
-    recap.innerHTML = '<div class="recap-row">Paiement reçu avec succès. Merci !</div>';
+  };
+
+  function apply(lang){
+    var t = TXT[lang] || TXT.fr;
+    document.documentElement.lang = lang;
+    document.title = t.doc;
+    document.getElementById('t-title').textContent = t.title;
+    document.getElementById('t-sub').innerHTML = t.sub;
+    var l = document.getElementById('t-loading'); if (l) l.innerHTML = '<i class="ti ti-loader" style="margin-right:6px"></i> ' + t.loading;
+    var b = document.getElementById('t-btn'); b.textContent = t.btn; b.href = t.btnUrl;
+    document.getElementById('t-contact').innerHTML = t.contact;
+    return t;
+  }
+
+  // Protection : les infos viennent du formulaire client, on les affiche comme du texte
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function row(label, val){ return val ? '<div class="recap-row">' + label + ' <span>' + esc(val) + '</span></div>' : ''; }
+
+  var lang = params.get('lang') === 'en' ? 'en' : 'fr';
+  var t = apply(lang);
+
+  if (!sessionId) { recap.innerHTML = '<div class="recap-row">' + t.merci + '</div>'; return; }
+
+  try {
+    var res = await fetch('/api/get-session?session_id=' + encodeURIComponent(sessionId));
+    var data = await res.json();
+    if (data && data.metadata) {
+      var m = data.metadata;
+      // Si la langue n'était pas dans l'adresse, on prend celle enregistrée avec la réservation
+      if (!params.get('lang') && m.langue === 'en') { lang = 'en'; t = apply('en'); }
+      var retour = m.dateret ? m.dateret + (m.horaireRetour ? ' · ' + m.horaireRetour : '') : '';
+      recap.innerHTML =
+        row(t.trajet, (m.depart || '—') + ' → ' + (m.destination || '—')) +
+        row(t.vehicule, m.vehicule) +
+        row(t.date, m.date) +
+        row(t.heure, m.horaire) +
+        row(t.retour, retour) +
+        row(t.vol, m.vol) +
+        row(t.adresse, m.adresse) +
+        row(t.equip, m.equipements) +
+        row(t.pax, m.pax) +
+        '<div class="recap-row recap-total">' + t.total + ' <span>EUR ' + (data.amount_total ? (data.amount_total / 100).toFixed(2) : '—') + '</span></div>';
+    } else {
+      recap.innerHTML = '<div class="recap-row">' + t.ok + '</div>';
+    }
+  } catch (e) {
+    recap.innerHTML = '<div class="recap-row">' + t.ok + '</div>';
   }
 })();
 </script>
