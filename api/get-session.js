@@ -138,9 +138,13 @@ module.exports = async function handler(req, res) {
 
     if (!dejaEnvoye) {
       try {
+        // ⚠️ Resend ne « plante » pas en cas de refus : il renvoie { error }. On vérifie donc chaque envoi.
+        const verifier = (r, qui) => {
+          if (!r || r.error) throw new Error('Resend a refusé l\'e-mail ' + qui + ' : ' + JSON.stringify(r && r.error));
+        };
         if (email) {
           const t = T[lang];
-          await resend.emails.send({
+          const rClient = await resend.emails.send({
             from: `Squeed <${FROM_EMAIL}>`,
             to: email,
             reply_to: ADMIN_EMAIL,
@@ -148,9 +152,10 @@ module.exports = async function handler(req, res) {
             html: emailClientHTML(meta, amount, lang),
             attachments: [{ filename: t.fichier, content: Buffer.from(recapTexte(meta, amount, email, telephone, t), 'utf-8').toString('base64') }],
           });
+          verifier(rClient, 'client');
         }
 
-        await resend.emails.send({
+        const rAdmin = await resend.emails.send({
           from: `Squeed <${FROM_EMAIL}>`,
           to: ADMIN_EMAIL,
           reply_to: email || undefined,
@@ -158,11 +163,13 @@ module.exports = async function handler(req, res) {
           html: emailAdminHTML(meta, amount, email, telephone),
           attachments: [{ filename: `reservation-${meta.prenom || ''}-${meta.nom || ''}.txt`, content: Buffer.from(recapTexte(meta, amount, email, telephone, T.fr), 'utf-8').toString('base64') }],
         });
+        verifier(rAdmin, 'admin');
 
+        // On ne note « envoyé » que si les deux e-mails ont vraiment été acceptés par Resend
         if (piId) await stripe.paymentIntents.update(piId, { metadata: { emails_envoyes: 'oui' } });
       } catch (mailErr) {
         // Un souci d'e-mail ne doit pas empêcher le client de voir sa confirmation
-        console.error('Erreur envoi e-mail:', mailErr);
+        console.error('Erreur envoi e-mail:', mailErr.message || mailErr);
       }
     }
 
