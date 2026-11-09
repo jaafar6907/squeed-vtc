@@ -9,89 +9,35 @@ const ORIGINES_AUTORISEES = [
 
 
 // ============================================================
-// TARIFS — le prix est recalculé ICI, le montant du navigateur
-// n'est plus jamais utilisé tel quel.
-// ⚠️ Si tu changes un prix, change-le aussi dans les 2 formulaires
-//    (squeed.fr/reservation et ski.squeed.fr/book).
-// Ordre des véhicules : [Berline, Van Éco, V-Class, Vito, Sprinter]
+// TARIFS — lus dans tarifs.csv et regles.csv (racine du dépôt GitHub).
+// Pour changer un prix : modifier tarifs.csv, c'est tout (les 2 sites suivent automatiquement).
+// Le prix est recalculé ICI : le montant envoyé par le navigateur n'est jamais utilisé tel quel.
 // ============================================================
-const PRIX = {
-  LYS: {
-    lyon_ville:[60,85,110,100,300],vienne:[110,130,170,150,345],saint_etienne:[153,180,220,200,475],
-    bourg_en_bresse:[153,180,220,200,475],chambery_ville:[196,230,270,250,605],
-    grenoble_ville:[212,250,290,270,660],valence:[255,300,350,320,795],annecy:[255,300,350,330,795],
-    roanne:[255,300,360,340,795],geneve_ville:[340,400,460,440,1060],geneve_airport:[280,330,400,350,920],
-    dijon:[450,530,610,570,1405],marseille_ville:[650,750,1000,900,1950],paris_ville:[850,1000,1350,1200,2900],
-    paris_cdg:[850,1000,1350,1200,2900],st_tropez:[1020,1200,1380,1240,3175],
-    cannes_ville:[1062,1250,1438,1290,3305],courchevel:[360,450,490,470,1125],meribel:[360,450,490,470,1125],
-    valmorel:[323,450,490,470,1005],valthorens:[360,450,490,470,1125],menuires:[360,450,490,470,1125],
-    chamonix:[380,450,500,470,1035],tignes:[370,450,500,475,1150],valdisere:[405,450,550,525,1265],
-    lesarcs:[380,450,490,465,1125],rosiere:[355,450,490,458,1105],laplagne:[355,450,490,458,1105],
-    megeve:[365,420,470,450,1080],alpedhuez:[330,390,450,440,1035],deuxalpes:[330,390,450,440,1035],
-    serrechevalier:[400,450,530,500,1220]
-  },
-  PARTDIEU: {
-    lyon_ville:[35,50,70,60,null],vienne:[72,85,100,90,225],saint_etienne:[128,150,180,160,395],
-    bourg_en_bresse:[170,200,240,220,530],chambery_ville:[212,250,300,280,660],
-    grenoble_ville:[212,250,300,280,660],valence:[212,250,300,280,660],roanne:[212,250,300,270,660],
-    annecy:[298,350,402,420,925],geneve_ville:[298,350,450,420,925],dijon:[425,400,550,500,1320],
-    marseille_ville:[650,750,1000,900,1950],paris_ville:[850,1000,1350,1200,2900],
-    paris_cdg:[850,1000,1350,1200,2900],st_tropez:[850,1000,1150,1200,2645],
-    cannes_ville:[1020,1200,1380,1440,3175],courchevel:[360,425,490,470,1125],meribel:[360,425,490,470,1125],
-    valmorel:[323,425,490,470,1005],valthorens:[360,425,490,465,1125],menuires:[360,425,490,465,1125],
-    chamonix:[330,425,490,450,1035],tignes:[370,425,500,475,1150],valdisere:[405,480,550,525,1265],
-    lesarcs:[360,425,490,465,1125],rosiere:[355,418,500,458,1105],laplagne:[355,418,500,458,1105],
-    megeve:[365,395,470,420,1080],alpedhuez:[330,390,450,420,1035],deuxalpes:[330,390,450,420,1035],
-    serrechevalier:[400,450,530,500,1220]
-  },
-  GVA: {
-    lyon_ville:[300,350,430,390,990],geneve_airport:[250,280,330,320,760],paris_ville:[1012,1200,1388,1240,3190],
-    paris_cdg:[1012,1200,1388,1240,3190],courchevel:[375,415,490,450,1125],meribel:[385,425,500,460,1150],
-    valthorens:[385,425,500,460,1150],menuires:[385,425,500,460,1150],tignes:[430,470,550,510,1265],
-    valdisere:[430,470,550,510,1265],lesarcs:[415,455,530,490,1220],laplagne:[430,470,550,510,1265],
-    rosiere:[430,470,550,510,1265],valmorel:[430,470,550,510,1265],alpedhuez:[435,475,550,510,1265],
-    deuxalpes:[450,490,570,530,1310],megeve:[215,255,330,275,760],chamonix:[195,230,300,250,690]
-  },
-  GNB_AIR: {
-    courchevel:[323,425,490,450,1005],meribel:[360,425,490,450,1125],valmorel:[323,425,490,450,1005],
-    valthorens:[360,425,490,465,1125],menuires:[360,425,490,465,1125],chamonix:[355,418,490,458,1105],
-    tignes:[370,435,500,475,1150],valdisere:[405,480,550,525,1265],lesarcs:[360,425,490,465,1125],
-    rosiere:[355,418,490,458,1105],laplagne:[355,418,490,458,1105],megeve:[350,380,450,400,1035],
-    alpedhuez:[310,335,390,370,895],deuxalpes:[310,335,390,370,895],serrechevalier:[350,400,480,440,1105]
-  },
-  CMF_AIR: {
-    courchevel:[305,375,380,360,875],meribel:[310,385,390,370,895],valthorens:[310,385,390,370,895],
-    menuires:[310,385,390,370,895],alpedhuez:[310,385,390,370,895],valmorel:[280,350,350,330,805],
-    tignes:[310,385,390,370,895],valdisere:[345,420,430,405,990],lesarcs:[310,385,390,370,895],
-    laplagne:[336,410,420,396,965],rosiere:[336,410,420,396,965],megeve:[230,320,350,290,805],
-    chamonix:[230,320,350,290,805]
-  }
-};
-PRIX.GNB_TRAIN = PRIX.GNB_AIR;   // mêmes tarifs que l'aéroport
-PRIX.CMF_TRAIN = PRIX.CMF_AIR;
-
-// Samedis de vacances d'hiver 2027 : forte demande, +20 %
-const SAMEDIS_MAJO = ['2027-02-06','2027-02-13','2027-02-20','2027-02-27','2027-03-06'];
+const { chargerTarifs } = require('./_tarifs');
 const DEST_SKI = ['courchevel','meribel','valthorens','menuires','tignes','valdisere','lesarcs','laplagne','rosiere','valmorel','megeve','chamonix','alpedhuez','deuxalpes','serrechevalier'];
 
 // Nombre max de passagers par véhicule (index du tableau de prix)
 const MAX_PAX = { 0: 3, 1: 7, 2: 7, 3: 8, 4: 50 };
 
-// Suppléments, dans l'ordre des cases du formulaire :
-// réhausseur, siège enfant, siège bébé, support ski, vélo, fauteuil roulant
-const SUPPLEMENTS = [0, 0, 5, 20, 18, 0];
-
-function tauxMajo(dateISO, dest) {
-  const jour = new Date(dateISO + 'T12:00:00Z').getUTCDay(); // 0 = dimanche
-  if (SAMEDIS_MAJO.includes(dateISO)) return 0.20;
-  if (DEST_SKI.includes(dest) && jour >= 1 && jour <= 5) return -0.15;
-  if (DEST_SKI.includes(dest) && jour === 0) return -0.15;
-  return 0;
+// Prix d'UN trajet (aller simple) à une date donnée :
+// samedi = colonne « samedi » (+ majoration les samedis de vacances, vers les stations) ; autres jours = colonne « semaine »
+function prixTrajet(ligne, veh, dateISO, dest, R) {
+  const samedi = new Date(dateISO + 'T12:00:00Z').getUTCDay() === 6;
+  let p = (samedi ? ligne.sa : ligne.s)[veh];
+  if (!p) return null;
+  if (samedi) {
+    const S = R.saison || {};
+    if (R.majo && R.samedis.includes(dateISO) && DEST_SKI.includes(dest)) p = p * (1 + R.majo / 100);          // samedis de vacances
+    else if (S.pct && S.debut && S.fin && dateISO >= S.debut && dateISO <= S.fin) p = p * (1 + S.pct / 100); // samedis de haute saison
+  }
+  return Math.round(p * 100) / 100; // arrondi au centime
 }
 
 // Renvoie { total } ou { erreur }
 function calculerPrix(calc) {
   if (!calc || typeof calc !== 'object') return { erreur: 'calc_manquant' };
+  const T = chargerTarifs();
+  const PRIX = T.prix, R = T.regles, SUPPLEMENTS = R.supplements;
   const { dep, dest, date, retour } = calc;
   const veh = parseInt(calc.veh, 10);
   const pax = parseInt(calc.pax, 10) || 1;
@@ -99,7 +45,6 @@ function calculerPrix(calc) {
   if (!PRIX[dep] || !PRIX[dep][dest]) return { erreur: 'trajet_sur_devis' };
   const ligne = PRIX[dep][dest];
   if (!(veh in MAX_PAX)) return { erreur: 'vehicule_inconnu' };
-  if (!ligne[veh]) return { erreur: 'trajet_sur_devis' };
   if (pax < 1 || pax > MAX_PAX[veh]) return { erreur: 'trop_de_passagers' };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) return { erreur: 'date_invalide' };
 
@@ -107,10 +52,16 @@ function calculerPrix(calc) {
   const hier = new Date(Date.now() - 36 * 3600 * 1000).toISOString().slice(0, 10);
   if (date < hier) return { erreur: 'date_passee' };
 
-  let p = ligne[veh];
-  const t = tauxMajo(date, dest);
-  if (t !== 0) p = Math.round(p * (1 + t));
-  const base = retour ? p * 2 : p;
+  const aller = prixTrajet(ligne, veh, date, dest, R);
+  if (aller === null) return { erreur: 'trajet_sur_devis' };
+  let base = aller;
+  if (retour) {
+    // Le retour est calculé à SA date (samedi ou semaine) ; sans date de retour, on prend celle de l'aller
+    const dateRet = /^\d{4}-\d{2}-\d{2}$/.test(calc.dateret || '') ? calc.dateret : date;
+    const ret = prixTrajet(ligne, veh, dateRet, dest, R);
+    if (ret === null) return { erreur: 'trajet_sur_devis' };
+    base += ret;
+  }
 
   const extras = Array.isArray(calc.extras) ? calc.extras : [];
   const vus = new Set();
