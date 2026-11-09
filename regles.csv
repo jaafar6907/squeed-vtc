@@ -1,0 +1,16 @@
+﻿cle;valeur;explication
+saison_samedi_pourcent;5;% ajouté au prix de TOUS les samedis entre les 2 dates ci-dessous (0 = aucune)
+saison_debut;2026-12-26;premier jour de la période (AAAA-MM-JJ)
+saison_fin;2027-03-31;dernier jour de la période (AAAA-MM-JJ)
+majoration_samedi_vacances;20;% ajouté au prix du SAMEDI vers les stations, les samedis listés ci-dessous (remplace les 5 % ces jours-là)
+samedi_vacances;2027-02-06;une ligne par samedi de forte demande (format AAAA-MM-JJ)
+samedi_vacances;2027-02-13;
+samedi_vacances;2027-02-20;
+samedi_vacances;2027-02-27;
+samedi_vacances;2027-03-06;
+supplement_rehausseur;0;€ (0 = gratuit)
+supplement_siege_enfant;0;€
+supplement_siege_bebe;5;€
+supplement_support_ski;20;€
+supplement_velo;18;€
+supplement_fauteuil_roulant;0;€
