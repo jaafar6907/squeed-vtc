@@ -93,8 +93,8 @@ GNB_AIR;laplagne;Aéroport / Gare Grenoble (GNB);La Plagne;380;420;470;440;950;4
 GNB_AIR;rosiere;Aéroport / Gare Grenoble (GNB);La Rosière;380;420;470;440;950;420;470;550;520;1200
 GNB_AIR;megeve;Aéroport / Gare Grenoble (GNB);Megève;300;350;390;370;800;340;400;500;480;1000
 GNB_AIR;chamonix;Aéroport / Gare Grenoble (GNB);Chamonix;350;390;470;450;900;400;440;550;520;1200
-GNB_AIR;alpedhuez;Aéroport / Gare Grenoble (GNB);Alpe d'Huez;220;270;320;300;800;300;380;450;420;1000
-GNB_AIR;deuxalpes;Aéroport / Gare Grenoble (GNB);Les Deux Alpes;220;270;320;300;800;300;380;450;420;1000
+GNB_AIR;alpedhuez;Aéroport / Gare Grenoble (GNB);Alpe d'Huez;220;270;320;300;800;300;300;350;330;800
+GNB_AIR;deuxalpes;Aéroport / Gare Grenoble (GNB);Les Deux Alpes;220;270;320;300;800;300;300;350;330;800
 GNB_AIR;serrechevalier;Aéroport / Gare Grenoble (GNB);Serre Chevalier;350;400;490;470;1000;400;450;550;530;1200
 CMF_AIR;courchevel;Aéroport / Gare Chambéry (CMF);Courchevel;200;220;280;250;;300;350;385;366;
 CMF_AIR;meribel;Aéroport / Gare Chambéry (CMF);Méribel;200;220;280;250;;300;350;385;366;
