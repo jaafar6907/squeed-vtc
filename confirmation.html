@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
+<!-- Google Ads (AW-17888616572) : suivi des réservations payées -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-17888616572"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-17888616572');
+</script>
 <title>Réservation confirmée — Squeed</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
@@ -87,6 +95,18 @@ h1 { font-size: 22px; font-weight: 500; margin-bottom: 8px; }
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function row(label, val){ return val ? '<div class="recap-row">' + label + ' <span>' + esc(val) + '</span></div>' : ''; }
 
+  // Google Ads : conversion « Réservation en ligne » (une seule fois par paiement)
+  function sendConversion(amountCents){
+    try {
+      var key = 'sq_conv_' + sessionId;
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+    } catch (e) {}
+    var conv = { send_to: 'AW-17888616572/7_4WCPbT1rcdEPzA-tFC', currency: 'EUR', transaction_id: sessionId };
+    if (amountCents) conv.value = amountCents / 100;
+    if (typeof gtag === 'function') gtag('event', 'conversion', conv);
+  }
+
   var lang = params.get('lang') === 'en' ? 'en' : 'fr';
   var t = apply(lang);
 
@@ -111,11 +131,14 @@ h1 { font-size: 22px; font-weight: 500; margin-bottom: 8px; }
         row(t.equip, m.equipements) +
         row(t.pax, m.pax) +
         '<div class="recap-row recap-total">' + t.total + ' <span>EUR ' + (data.amount_total ? (data.amount_total / 100).toFixed(2) : '—') + '</span></div>';
+      sendConversion(data.amount_total);
     } else {
       recap.innerHTML = '<div class="recap-row">' + t.ok + '</div>';
+      sendConversion(data && data.amount_total);
     }
   } catch (e) {
     recap.innerHTML = '<div class="recap-row">' + t.ok + '</div>';
+    sendConversion(null);
   }
 })();
 </script>
