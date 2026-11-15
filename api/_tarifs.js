@@ -51,12 +51,12 @@ function chargerTarifs() {
       else if (cle === 'saison_samedi_pourcent') r.saison.pct = parseFloat(String(val).replace(',', '.')) || 0;
       else if (cle === 'saison_debut' && /^\d{4}-\d{2}-\d{2}$/.test(val)) r.saison.debut = val;
       else if (cle === 'saison_fin' && /^\d{4}-\d{2}-\d{2}$/.test(val)) r.saison.fin = val;
-      else if (cle === 'prix_jour' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
-        // prix_jour;AAAA-MM-JJ;départs;destinations;Berline;Van Éco;V-Class;Vito;Sprinter (aller simple, case vide = prix habituel)
+      else if (cle === 'prix_jour' && (/^\d{4}-\d{2}-\d{2}$/.test(val) || /^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)$/i.test(val))) {
+        // prix_jour;AAAA-MM-JJ ou jour (ex. dimanche = tous les dimanches);départs;destinations;Berline;Van Éco;V-Class;Vito;Sprinter (aller simple, case vide = prix habituel)
         const liste = (x) => String(x || '').split(/[\s,|]+/).filter(Boolean);
         const prix = [];
         for (let i = 0; i < VEHICULES; i++) prix.push(nombre(c[4 + i]));
-        r.prixJour.push({ date: val, departs: liste(c[2]), dests: liste(c[3]), prix });
+        r.prixJour.push({ date: String(val).toLowerCase(), departs: liste(c[2]), dests: liste(c[3]), prix });
       }
       else if (cle === 'remise_jour' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
         // remise_jour;AAAA-MM-JJ;pourcentage;destinations (vide = toutes);départs (vide = tous)
