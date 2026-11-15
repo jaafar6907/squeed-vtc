@@ -17,11 +17,16 @@ const { chargerTarifs } = require('./_tarifs');
 const DEST_SKI = ['courchevel','meribel','valthorens','menuires','tignes','valdisere','lesarcs','laplagne','rosiere','valmorel','megeve','chamonix','alpedhuez','deuxalpes','serrechevalier'];
 
 // Nombre max de passagers par véhicule (index du tableau de prix)
-const MAX_PAX = { 0: 3, 1: 7, 2: 7, 3: 8, 4: 50 };
+const MAX_PAX = { 0: 3, 1: 7, 2: 7, 3: 8, 4: 50, 5: 16 }; // 5 = 2 vans économiques (prix = 2 × Van Éco)
 
 // Prix d'UN trajet (aller simple) à une date donnée :
 // samedi = colonne « samedi » (+ majoration les samedis de vacances, vers les stations) ; autres jours = colonne « semaine »
 function prixTrajet(ligne, veh, dateISO, dest, R, dep) {
+  // 2 vans économiques : toujours 2 × le prix du Van Éco (mêmes règles du jour)
+  if (veh === 5) {
+    const un = prixTrajet(ligne, 1, dateISO, dest, R, dep);
+    return un === null ? null : Math.round(un * 2 * 100) / 100;
+  }
   // Prix fixé pour un jour précis (regles.csv, lignes prix_jour) : il remplace tout le reste ce jour-là
   const JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
   const jour = JOURS[new Date(dateISO + 'T12:00:00Z').getUTCDay()];
