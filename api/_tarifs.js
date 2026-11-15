@@ -41,7 +41,7 @@ function chargerTarifs() {
   if (prix.GNB_AIR) prix.GNB_TRAIN = prix.GNB_AIR;
   if (prix.CMF_AIR) prix.CMF_TRAIN = prix.CMF_AIR;
 
-  const r = { majo: 20, samedis: [], saison: { pct: 0, debut: '', fin: '' }, supplements: [0, 0, 5, 20, 18, 0] };
+  const r = { majo: 20, samedis: [], saison: { pct: 0, debut: '', fin: '' }, remises: [], prixJour: [], supplements: [0, 0, 5, 20, 18, 0] };
   const SUPP = ['supplement_rehausseur', 'supplement_siege_enfant', 'supplement_siege_bebe',
     'supplement_support_ski', 'supplement_velo', 'supplement_fauteuil_roulant'];
   try {
@@ -51,6 +51,18 @@ function chargerTarifs() {
       else if (cle === 'saison_samedi_pourcent') r.saison.pct = parseFloat(String(val).replace(',', '.')) || 0;
       else if (cle === 'saison_debut' && /^\d{4}-\d{2}-\d{2}$/.test(val)) r.saison.debut = val;
       else if (cle === 'saison_fin' && /^\d{4}-\d{2}-\d{2}$/.test(val)) r.saison.fin = val;
+      else if (cle === 'prix_jour' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+        // prix_jour;AAAA-MM-JJ;départs;destinations;Berline;Van Éco;V-Class;Vito;Sprinter (aller simple, case vide = prix habituel)
+        const liste = (x) => String(x || '').split(/[\s,|]+/).filter(Boolean);
+        const prix = [];
+        for (let i = 0; i < VEHICULES; i++) prix.push(nombre(c[4 + i]));
+        r.prixJour.push({ date: val, departs: liste(c[2]), dests: liste(c[3]), prix });
+      }
+      else if (cle === 'remise_jour' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+        // remise_jour;AAAA-MM-JJ;pourcentage;destinations (vide = toutes);départs (vide = tous)
+        const pct = parseFloat(String(c[2] || '').replace(',', '.'));
+        if (pct) r.remises.push({ date: val, pct, dests: String(c[3] || '').split(/[\s,|]+/).filter(Boolean), departs: String(c[4] || '').split(/[\s,|]+/).filter(Boolean) });
+      }
       else if (cle === 'samedi_vacances' && /^\d{4}-\d{2}-\d{2}$/.test(val)) r.samedis.push(val);
       else if (SUPP.includes(cle)) r.supplements[SUPP.indexOf(cle)] = parseFloat(String(val).replace(',', '.')) || 0;
     }
