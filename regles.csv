@@ -8,7 +8,7 @@ samedi_vacances;2027-02-13;
 samedi_vacances;2027-02-20;
 samedi_vacances;2027-02-27;
 samedi_vacances;2027-03-06;
-# prix_jour;date;départs;destinations;Berline;Van Éco;V-Class;Vito;Sprinter (ALLER SIMPLE ; case vide = prix habituel du samedi)
+# prix_jour;date (ou un jour : dimanche = tous les dimanches);départs;destinations;Berline;Van Éco;V-Class;Vito;Sprinter (ALLER SIMPLE ; case vide = prix habituel du samedi)
 prix_jour;2026-12-05;LYS PARTDIEU;alpedhuez deuxalpes;250;340;375;365;
 prix_jour;2026-12-05;GNB_AIR GNB_TRAIN;alpedhuez deuxalpes;200;250;275;265;
 prix_jour;2026-12-05;CMF_AIR CMF_TRAIN;alpedhuez deuxalpes;240;255;285;275;
@@ -18,6 +18,13 @@ prix_jour;2026-12-12;CMF_AIR CMF_TRAIN;alpedhuez deuxalpes;240;255;285;275;
 prix_jour;2026-12-19;LYS PARTDIEU;alpedhuez deuxalpes;250;340;375;365;
 prix_jour;2026-12-19;GNB_AIR GNB_TRAIN;alpedhuez deuxalpes;200;250;275;265;
 prix_jour;2026-12-19;CMF_AIR CMF_TRAIN;alpedhuez deuxalpes;240;255;285;275;
+prix_jour;2026-12-06;LYS PARTDIEU;alpedhuez deuxalpes;275;345;375;365;
+prix_jour;2026-12-06;GNB_AIR GNB_TRAIN;alpedhuez deuxalpes;200;247.5;275;265;
+prix_jour;2026-12-13;LYS PARTDIEU;alpedhuez deuxalpes;275;345;375;365;
+prix_jour;2026-12-13;GNB_AIR GNB_TRAIN;alpedhuez deuxalpes;200;247.5;275;265;
+prix_jour;2026-12-20;LYS PARTDIEU;alpedhuez deuxalpes;275;345;375;365;
+prix_jour;2026-12-20;GNB_AIR GNB_TRAIN;alpedhuez deuxalpes;200;247.5;275;265;
+prix_jour;dimanche;CMF_AIR CMF_TRAIN;alpedhuez deuxalpes;245;275;305;295;
 supplement_rehausseur;0;€ (0 = gratuit)
 supplement_siege_enfant;0;€
 supplement_siege_bebe;5;€
