@@ -11,8 +11,8 @@ LYS;laplagne;Aéroport Lyon (LYS);La Plagne;380;420;470;440;950;420;470;550;520;
 LYS;rosiere;Aéroport Lyon (LYS);La Rosière;380;420;470;440;950;420;470;550;520;1200
 LYS;megeve;Aéroport Lyon (LYS);Megève;300;350;390;370;800;340;400;500;480;1000
 LYS;chamonix;Aéroport Lyon (LYS);Chamonix;350;390;470;450;900;400;440;550;520;1200
-LYS;alpedhuez;Aéroport Lyon (LYS);Alpe d'Huez;275;270;320;300;800;300;380;450;420;1000
-LYS;deuxalpes;Aéroport Lyon (LYS);Les Deux Alpes;275;270;320;300;800;300;380;450;420;1000
+LYS;alpedhuez;Aéroport Lyon (LYS);Alpe d'Huez;275;325;345;345;800;300;380;450;420;1000
+LYS;deuxalpes;Aéroport Lyon (LYS);Les Deux Alpes;275;325;345;345;800;300;380;450;420;1000
 LYS;serrechevalier;Aéroport Lyon (LYS);Serre Chevalier;350;400;490;470;1000;400;450;550;530;1200
 LYS;lyon_ville;Aéroport Lyon (LYS);Lyon centre-ville;60;70;100;80;250;60;70;100;80;250
 LYS;vienne;Aéroport Lyon (LYS);Vienne;60;80;110;90;250;60;80;110;90;250
@@ -43,8 +43,8 @@ PARTDIEU;laplagne;Gare Lyon Part-Dieu;La Plagne;380;420;470;440;950;420;470;550;
 PARTDIEU;rosiere;Gare Lyon Part-Dieu;La Rosière;380;420;470;440;950;420;470;550;520;1200
 PARTDIEU;megeve;Gare Lyon Part-Dieu;Megève;300;350;390;370;800;340;400;500;480;1000
 PARTDIEU;chamonix;Gare Lyon Part-Dieu;Chamonix;350;390;470;450;900;400;440;550;520;1200
-PARTDIEU;alpedhuez;Gare Lyon Part-Dieu;Alpe d'Huez;275;270;320;300;800;300;380;450;420;1000
-PARTDIEU;deuxalpes;Gare Lyon Part-Dieu;Les Deux Alpes;275;270;320;300;800;300;380;450;420;1000
+PARTDIEU;alpedhuez;Gare Lyon Part-Dieu;Alpe d'Huez;275;325;345;345;800;300;380;450;420;1000
+PARTDIEU;deuxalpes;Gare Lyon Part-Dieu;Les Deux Alpes;275;325;345;345;800;300;380;450;420;1000
 PARTDIEU;serrechevalier;Gare Lyon Part-Dieu;Serre Chevalier;350;400;490;470;1000;400;450;550;530;1200
 PARTDIEU;lyon_ville;Gare Lyon Part-Dieu;Lyon centre-ville;30;50;60;60;;30;50;60;60;
 PARTDIEU;vienne;Gare Lyon Part-Dieu;Vienne;60;80;110;90;250;60;80;110;90;250
