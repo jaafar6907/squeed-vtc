@@ -23,7 +23,10 @@ const MAX_PAX = { 0: 3, 1: 7, 2: 7, 3: 8, 4: 50 };
 // samedi = colonne « samedi » (+ majoration les samedis de vacances, vers les stations) ; autres jours = colonne « semaine »
 function prixTrajet(ligne, veh, dateISO, dest, R, dep) {
   // Prix fixé pour un jour précis (regles.csv, lignes prix_jour) : il remplace tout le reste ce jour-là
-  const PJ = (R.prixJour || []).find((x) => x.date === dateISO && (!x.departs.length || x.departs.includes(dep)) && (!x.dests.length || x.dests.includes(dest)) && x.prix[veh]);
+  const JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+  const jour = JOURS[new Date(dateISO + 'T12:00:00Z').getUTCDay()];
+  const ok = (x) => (!x.departs.length || x.departs.includes(dep)) && (!x.dests.length || x.dests.includes(dest)) && x.prix[veh];
+  const PJ = (R.prixJour || []).find((x) => x.date === dateISO && ok(x)) || (R.prixJour || []).find((x) => x.date === jour && ok(x));
   if (PJ) return PJ.prix[veh];
   const samedi = new Date(dateISO + 'T12:00:00Z').getUTCDay() === 6;
   let p = (samedi ? ligne.sa : ligne.s)[veh];
