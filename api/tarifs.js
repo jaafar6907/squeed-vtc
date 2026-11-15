@@ -12,6 +12,8 @@ module.exports = function handler(req, res) {
       samedis: t.regles.samedis,
       majo: t.regles.majo / 100,
       saison: { pct: t.regles.saison.pct / 100, debut: t.regles.saison.debut, fin: t.regles.saison.fin },
+      prixJour: t.regles.prixJour,
+      remises: t.regles.remises.map((x) => ({ date: x.date, pct: x.pct / 100, dests: x.dests, departs: x.departs })),
       supplements: t.regles.supplements,
     });
   } catch (err) {
