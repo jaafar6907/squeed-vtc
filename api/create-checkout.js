@@ -17,21 +17,21 @@ const { chargerTarifs } = require('./_tarifs');
 const DEST_SKI = ['courchevel','meribel','valthorens','menuires','tignes','valdisere','lesarcs','laplagne','rosiere','valmorel','megeve','chamonix','alpedhuez','deuxalpes','serrechevalier'];
 
 // Nombre max de passagers par véhicule (index du tableau de prix)
-// 0 Berline, 1 Van Éco, 2 V-Class, 3 Vito, 4 Sprinter, 5 = « 2 vans » (deux Vito)
-const MAX_PAX = { 0: 3, 1: 8, 2: 7, 3: 8, 4: 50, 5: 16 };
+const MAX_PAX = { 0: 3, 1: 7, 2: 7, 3: 8, 4: 50 };
 
 // Prix d'UN trajet (aller simple) à une date donnée :
 // samedi = colonne « samedi » (+ majoration les samedis de vacances, vers les stations) ; autres jours = colonne « semaine »
-function prixTrajet(ligne, veh, dateISO, dest, R) {
-  // Option « 2 vans » : deux Mercedes Vito, au prix de 2 × le Vito
-  if (veh === 5) {
-    const vito = prixTrajet(ligne, 3, dateISO, dest, R);
-    return vito === null ? null : Math.round(vito * 2 * 100) / 100;
-  }
+function prixTrajet(ligne, veh, dateISO, dest, R, dep) {
+  // Prix fixé pour un jour précis (regles.csv, lignes prix_jour) : il remplace tout le reste ce jour-là
+  const PJ = (R.prixJour || []).find((x) => x.date === dateISO && (!x.departs.length || x.departs.includes(dep)) && (!x.dests.length || x.dests.includes(dest)) && x.prix[veh]);
+  if (PJ) return PJ.prix[veh];
   const samedi = new Date(dateISO + 'T12:00:00Z').getUTCDay() === 6;
   let p = (samedi ? ligne.sa : ligne.s)[veh];
   if (!p) return null;
-  if (samedi) {
+  // Remise d'un jour précis (regles.csv, lignes remise_jour) : remplace les majorations ce jour-là
+  const RM = (R.remises || []).find((x) => x.date === dateISO && (!x.dests.length || x.dests.includes(dest)) && (!x.departs.length || x.departs.includes(dep)));
+  if (RM) p = p * (1 + RM.pct / 100);
+  else if (samedi) {
     const S = R.saison || {};
     if (R.majo && R.samedis.includes(dateISO) && DEST_SKI.includes(dest)) p = p * (1 + R.majo / 100);          // samedis de vacances
     else if (S.pct && S.debut && S.fin && dateISO >= S.debut && dateISO <= S.fin) p = p * (1 + S.pct / 100); // samedis de haute saison
@@ -58,13 +58,13 @@ function calculerPrix(calc) {
   const hier = new Date(Date.now() - 36 * 3600 * 1000).toISOString().slice(0, 10);
   if (date < hier) return { erreur: 'date_passee' };
 
-  const aller = prixTrajet(ligne, veh, date, dest, R);
+  const aller = prixTrajet(ligne, veh, date, dest, R, dep);
   if (aller === null) return { erreur: 'trajet_sur_devis' };
   let base = aller;
   if (retour) {
     // Le retour est calculé à SA date (samedi ou semaine) ; sans date de retour, on prend celle de l'aller
     const dateRet = /^\d{4}-\d{2}-\d{2}$/.test(calc.dateret || '') ? calc.dateret : date;
-    const ret = prixTrajet(ligne, veh, dateRet, dest, R);
+    const ret = prixTrajet(ligne, veh, dateRet, dest, R, dep);
     if (ret === null) return { erreur: 'trajet_sur_devis' };
     base += ret;
   }
