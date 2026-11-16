@@ -40,6 +40,9 @@ function chargerTarifs() {
   // Gares de Grenoble et Chambéry : mêmes prix que leurs aéroports
   if (prix.GNB_AIR) prix.GNB_TRAIN = prix.GNB_AIR;
   if (prix.CMF_AIR) prix.CMF_TRAIN = prix.CMF_AIR;
+  // Aéroport de Lyon-Bron : on accepte les deux codes (BRON ou BRON_AIR) dans tarifs.csv
+  if (prix.BRON_AIR && !prix.BRON) prix.BRON = prix.BRON_AIR;
+  if (prix.BRON && !prix.BRON_AIR) prix.BRON_AIR = prix.BRON;
 
   const r = { majo: 20, samedis: [], saison: { pct: 0, debut: '', fin: '' }, remises: [], prixJour: [], supplements: [0, 0, 5, 20, 18, 0] };
   const SUPP = ['supplement_rehausseur', 'supplement_siege_enfant', 'supplement_siege_bebe',
