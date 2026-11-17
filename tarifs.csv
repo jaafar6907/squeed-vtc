@@ -31,6 +31,8 @@ LYS;paris_ville;Aéroport Lyon (LYS);Paris;850;1000;1350;1200;2900;850;1000;1350
 LYS;paris_cdg;Aéroport Lyon (LYS);Paris CDG / Orly;850;1000;1350;1200;2900;850;1000;1350;1200;2900
 LYS;st_tropez;Aéroport Lyon (LYS);Saint-Tropez;800;850;1100;1000;;800;850;1100;1000;
 LYS;cannes_ville;Aéroport Lyon (LYS);Cannes;800;850;1100;1000;;800;850;1100;1000;
+BRON;courchevel;Aéroport Lyon-Bron (LYN);Courchevel;;;550;500;1200;;;550;500;1200
+BRON;valdisere;Aéroport Lyon-Bron (LYN);Val d'Isère;;;600;550;1250;;;600;550;1250
 PARTDIEU;courchevel;Gare Lyon Part-Dieu;Courchevel;325;370;416;390;955;370;415;490;460;1125
 PARTDIEU;meribel;Gare Lyon Part-Dieu;Méribel;325;370;416;390;955;370;415;490;460;1125
 PARTDIEU;valthorens;Gare Lyon Part-Dieu;Val Thorens;325;370;416;390;955;370;415;490;460;1125
