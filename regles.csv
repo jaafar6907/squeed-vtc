@@ -1,4 +1,5 @@
 cle;valeur;explication
+groupe_vclass;GVA;courchevel;450;490
 saison_samedi_pourcent;0;% ajouté au prix de TOUS les samedis entre les 2 dates ci-dessous (0 = aucune)
 saison_debut;2026-12-26;premier jour de la période (AAAA-MM-JJ)
 saison_fin;2027-03-31;dernier jour de la période (AAAA-MM-JJ)
