@@ -11,8 +11,8 @@ LYS;laplagne;Aéroport Lyon (LYS);La Plagne;380;420;470;440;950;420;470;550;520;
 LYS;rosiere;Aéroport Lyon (LYS);La Rosière;380;420;470;440;950;420;470;550;520;1200
 LYS;megeve;Aéroport Lyon (LYS);Megève;300;350;390;370;800;340;400;500;480;1000
 LYS;chamonix;Aéroport Lyon (LYS);Chamonix;350;390;470;450;900;400;440;550;520;1200
-LYS;alpedhuez;Aéroport Lyon (LYS);Alpe d'Huez;275;325;345;345;800;300;380;450;420;1000
-LYS;deuxalpes;Aéroport Lyon (LYS);Les Deux Alpes;275;325;345;345;800;300;380;450;420;1000
+LYS;alpedhuez;Aéroport Lyon (LYS);Alpe d'Huez;220;270;320;300;800;300;380;450;420;1000
+LYS;deuxalpes;Aéroport Lyon (LYS);Les Deux Alpes;220;270;320;300;800;300;380;450;420;1000
 LYS;serrechevalier;Aéroport Lyon (LYS);Serre Chevalier;350;400;490;470;1000;400;450;550;530;1200
 LYS;lyon_ville;Aéroport Lyon (LYS);Lyon centre-ville;60;70;100;80;250;60;70;100;80;250
 LYS;vienne;Aéroport Lyon (LYS);Vienne;60;80;110;90;250;60;80;110;90;250
@@ -43,8 +43,8 @@ PARTDIEU;laplagne;Gare Lyon Part-Dieu;La Plagne;380;420;470;440;950;420;470;550;
 PARTDIEU;rosiere;Gare Lyon Part-Dieu;La Rosière;380;420;470;440;950;420;470;550;520;1200
 PARTDIEU;megeve;Gare Lyon Part-Dieu;Megève;300;350;390;370;800;340;400;500;480;1000
 PARTDIEU;chamonix;Gare Lyon Part-Dieu;Chamonix;350;390;470;450;900;400;440;550;520;1200
-PARTDIEU;alpedhuez;Gare Lyon Part-Dieu;Alpe d'Huez;275;325;345;345;800;300;380;450;420;1000
-PARTDIEU;deuxalpes;Gare Lyon Part-Dieu;Les Deux Alpes;275;325;345;345;800;300;380;450;420;1000
+PARTDIEU;alpedhuez;Gare Lyon Part-Dieu;Alpe d'Huez;220;270;320;300;800;300;380;450;420;1000
+PARTDIEU;deuxalpes;Gare Lyon Part-Dieu;Les Deux Alpes;220;270;320;300;800;300;380;450;420;1000
 PARTDIEU;serrechevalier;Gare Lyon Part-Dieu;Serre Chevalier;350;400;490;470;1000;400;450;550;530;1200
 PARTDIEU;lyon_ville;Gare Lyon Part-Dieu;Lyon centre-ville;30;50;60;60;;30;50;60;60;
 PARTDIEU;vienne;Gare Lyon Part-Dieu;Vienne;60;80;110;90;250;60;80;110;90;250
@@ -93,8 +93,8 @@ GNB_AIR;laplagne;Aéroport / Gare Grenoble (GNB);La Plagne;380;420;470;440;950;4
 GNB_AIR;rosiere;Aéroport / Gare Grenoble (GNB);La Rosière;380;420;470;440;950;420;470;550;520;1200
 GNB_AIR;megeve;Aéroport / Gare Grenoble (GNB);Megève;300;350;390;370;800;340;400;500;480;1000
 GNB_AIR;chamonix;Aéroport / Gare Grenoble (GNB);Chamonix;350;390;470;450;900;400;440;550;520;1200
-GNB_AIR;alpedhuez;Aéroport / Gare Grenoble (GNB);Alpe d'Huez;220;250;280;260;800;249;350;390;370;800
-GNB_AIR;deuxalpes;Aéroport / Gare Grenoble (GNB);Les Deux Alpes;220;250;280;260;800;249;350;390;370;800
+GNB_AIR;alpedhuez;Aéroport / Gare Grenoble (GNB);Alpe d'Huez;220;250;290;280;800;249;300;350;330;800
+GNB_AIR;deuxalpes;Aéroport / Gare Grenoble (GNB);Les Deux Alpes;220;250;280;260;800;249;300;350;330;800
 GNB_AIR;serrechevalier;Aéroport / Gare Grenoble (GNB);Serre Chevalier;350;400;490;470;1000;400;450;550;530;1200
 CMF_AIR;courchevel;Aéroport / Gare Chambéry (CMF);Courchevel;200;220;280;250;;300;350;385;366;
 CMF_AIR;meribel;Aéroport / Gare Chambéry (CMF);Méribel;200;220;280;250;;300;350;385;366;
@@ -110,5 +110,3 @@ CMF_AIR;megeve;Aéroport / Gare Chambéry (CMF);Megève;180;180;240;220;;300;300
 CMF_AIR;alpedhuez;Aéroport / Gare Chambéry (CMF);Alpe d'Huez;200;200;250;250;;295;300;380;349;
 CMF_AIR;deuxalpes;Aéroport / Gare Chambéry (CMF);Les Deux Alpes;200;200;250;250;;295;300;380;349;
 CMF_AIR;serrechevalier;Aéroport / Gare Chambéry (CMF);Serre Chevalier;250;250;250;250;;300;300;385;366;
-BRON;courchevel;Aéroport Lyon-Bron (LYN);Courchevel;;;550;500;1200;;;550;500;1200
-BRON;valdisere;Aéroport Lyon-Bron (LYN);Val d'Isère;;;600;550;1250;;;600;550;1250
