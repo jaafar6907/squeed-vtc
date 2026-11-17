@@ -27,6 +27,10 @@ function prixTrajet(ligne, veh, dateISO, dest, R, dep) {
     const un = prixTrajet(ligne, 1, dateISO, dest, R, dep);
     return un === null ? null : Math.round(un * 2 * 100) / 100;
   }
+  // Pas de berline les samedis vers la montagne pendant la période indiquée dans regles.csv
+  const SB = R.sansBerline || {};
+  if (veh === 0 && SB.debut && SB.fin && dateISO >= SB.debut && dateISO <= SB.fin
+      && new Date(dateISO + 'T12:00:00Z').getUTCDay() === 6 && DEST_SKI.includes(dest)) return null;
   // Prix fixé pour un jour précis (regles.csv, lignes prix_jour) : il remplace tout le reste ce jour-là
   const JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
   const jour = JOURS[new Date(dateISO + 'T12:00:00Z').getUTCDay()];
