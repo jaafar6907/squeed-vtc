@@ -44,7 +44,7 @@ function chargerTarifs() {
   if (prix.BRON_AIR && !prix.BRON) prix.BRON = prix.BRON_AIR;
   if (prix.BRON && !prix.BRON_AIR) prix.BRON_AIR = prix.BRON;
 
-  const r = { majo: 20, samedis: [], saison: { pct: 0, debut: '', fin: '' }, remises: [], prixJour: [], supplements: [0, 0, 5, 20, 18, 0] };
+  const r = { majo: 20, samedis: [], saison: { pct: 0, debut: '', fin: '' }, remises: [], prixJour: [], sansBerline: { debut: '', fin: '' }, supplements: [0, 0, 5, 20, 18, 0] };
   const SUPP = ['supplement_rehausseur', 'supplement_siege_enfant', 'supplement_siege_bebe',
     'supplement_support_ski', 'supplement_velo', 'supplement_fauteuil_roulant'];
   try {
@@ -53,6 +53,8 @@ function chargerTarifs() {
       if (cle === 'majoration_samedi_vacances') r.majo = parseFloat(val) || 0;
       else if (cle === 'saison_samedi_pourcent') r.saison.pct = parseFloat(String(val).replace(',', '.')) || 0;
       else if (cle === 'saison_debut' && /^\d{4}-\d{2}-\d{2}$/.test(val)) r.saison.debut = val;
+      else if (cle === 'sans_berline_samedi_debut' && /^\d{4}-\d{2}-\d{2}$/.test(val)) r.sansBerline.debut = val;
+      else if (cle === 'sans_berline_samedi_fin' && /^\d{4}-\d{2}-\d{2}$/.test(val)) r.sansBerline.fin = val;
       else if (cle === 'saison_fin' && /^\d{4}-\d{2}-\d{2}$/.test(val)) r.saison.fin = val;
       else if (cle === 'prix_jour' && (/^\d{4}-\d{2}-\d{2}$/.test(val) || /^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)$/i.test(val))) {
         // prix_jour;AAAA-MM-JJ ou jour (ex. dimanche = tous les dimanches);départs;destinations;Berline;Van Éco;V-Class;Vito;Sprinter (aller simple, case vide = prix habituel)
