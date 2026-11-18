@@ -110,5 +110,5 @@ CMF_AIR;megeve;Aéroport / Gare Chambéry (CMF);Megève;180;180;240;220;;300;300
 CMF_AIR;alpedhuez;Aéroport / Gare Chambéry (CMF);Alpe d'Huez;200;200;250;250;;295;300;380;349;
 CMF_AIR;deuxalpes;Aéroport / Gare Chambéry (CMF);Les Deux Alpes;200;200;250;250;;295;300;380;349;
 CMF_AIR;serrechevalier;Aéroport / Gare Chambéry (CMF);Serre Chevalier;250;250;250;250;;300;300;385;366;
-MEGEVE;courchevel;Megève;Courchevel;;;200;250;;;;350;390;
-COURCHEVEL;megeve;Courchevel;Megève;;;200;250;;;;350;390;
+MEGEVE;courchevel;Megève;Courchevel;;;250;200;;;;390;350;
+COURCHEVEL;megeve;Courchevel;Megève;;;250;200;;;;390;350;
