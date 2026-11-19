@@ -17,7 +17,7 @@ const { chargerTarifs } = require('./_tarifs');
 const DEST_SKI = ['courchevel','meribel','valthorens','menuires','tignes','valdisere','lesarcs','laplagne','rosiere','valmorel','megeve','chamonix','alpedhuez','deuxalpes','serrechevalier'];
 
 // Nombre max de passagers par véhicule (index du tableau de prix)
-const MAX_PAX = { 0: 3, 1: 7, 2: 7, 3: 8, 4: 50, 5: 16, 6: 14, 7: 21 }; // 5 = 2 vans éco ; 6 = 2 V-Class ; 7 = 3 V-Class
+const MAX_PAX = { 0: 3, 1: 7, 2: 7, 3: 8, 4: 50, 5: 16, 6: 15, 7: 21 }; // 5 = 2 vans éco ; 6 = 2 vans Mercedes ; 7 = 3 V-Class
 
 // Prix d'UN trajet (aller simple) à une date donnée :
 // samedi = colonne « samedi » (+ majoration les samedis de vacances, vers les stations) ; autres jours = colonne « semaine »
@@ -27,6 +27,11 @@ function groupeVclass(R, dep, dest) {
 
 function prixTrajet(ligne, veh, dateISO, dest, R, dep) {
   // 2 ou 3 V-Class (regles.csv, lignes groupe_vclass) : nombre de vans × prix par V-Class de la règle
+  // 2 vans Mercedes partout : 2 × le prix de la V-Class du trajet (sauf trajets avec règle groupe_vclass)
+  if (veh === 6 && !groupeVclass(R, dep, dest)) {
+    const un = prixTrajet(ligne, 2, dateISO, dest, R, dep);
+    return un === null ? null : Math.round(un * 2 * 100) / 100;
+  }
   if (veh === 6 || veh === 7) {
     const G = groupeVclass(R, dep, dest);
     if (!G || !G.s) return null;
