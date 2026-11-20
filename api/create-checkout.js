@@ -17,7 +17,7 @@ const { chargerTarifs } = require('./_tarifs');
 const DEST_SKI = ['courchevel','meribel','valthorens','menuires','tignes','valdisere','lesarcs','laplagne','rosiere','valmorel','megeve','chamonix','alpedhuez','deuxalpes','serrechevalier'];
 
 // Nombre max de passagers par véhicule (index du tableau de prix)
-const MAX_PAX = { 0: 3, 1: 7, 2: 7, 3: 8, 4: 50, 5: 16, 6: 15, 7: 21 }; // 5 = 2 vans éco ; 6 = 2 vans Mercedes ; 7 = 3 V-Class
+const MAX_PAX = { 0: 3, 1: 7, 2: 7, 3: 8, 4: 50, 5: 16, 6: 15, 7: 21, 8: 14 }; // 5 = 2 vans éco ; 6 = 2 vans Mercedes ; 7 = 3 V-Class ; 8 = 2 V-Class
 
 // Prix d'UN trajet (aller simple) à une date donnée :
 // samedi = colonne « samedi » (+ majoration les samedis de vacances, vers les stations) ; autres jours = colonne « semaine »
@@ -26,19 +26,19 @@ function groupeVclass(R, dep, dest) {
 }
 
 function prixTrajet(ligne, veh, dateISO, dest, R, dep) {
-  // 2 ou 3 V-Class (regles.csv, lignes groupe_vclass) : nombre de vans × prix par V-Class de la règle
-  // 2 vans Mercedes partout : 2 × le prix de la V-Class du trajet (sauf trajets avec règle groupe_vclass)
-  if (veh === 6 && !groupeVclass(R, dep, dest)) {
-    const un = prixTrajet(ligne, 2, dateISO, dest, R, dep);
-    return un === null ? null : Math.round(un * 2 * 100) / 100;
-  }
-  if (veh === 6 || veh === 7) {
+  // Options de groupe :
+  //  6 = « 2 vans Mercedes » (9-15 pers.) sur les trajets SANS règle groupe_vclass : 2 × V-Class du trajet
+  //  8 = « 2 V-Class » (9-14 pers.) et 7 = « 3 V-Class » (15-21 pers.) sur les trajets AVEC règle groupe_vclass
+  //  Prix par V-Class : celui de la règle s'il est indiqué, sinon le prix V-Class du trajet (tarifs.csv)
+  if (veh === 6 || veh === 7 || veh === 8) {
     const G = groupeVclass(R, dep, dest);
-    if (!G || !G.s) return null;
+    if (veh === 6 && G) return null;
+    if ((veh === 7 || veh === 8) && !G) return null;
     const lv = { s: ligne.s.slice(), sa: ligne.sa.slice() };
-    lv.s[2] = G.s; lv.sa[2] = G.sa || G.s;
+    if (G && G.s) { lv.s[2] = G.s; lv.sa[2] = G.sa || G.s; }
+    else if (G && G.sa) lv.sa[2] = G.sa;
     const un = prixTrajet(lv, 2, dateISO, dest, R, dep);
-    return un === null ? null : Math.round(un * (veh === 6 ? 2 : 3) * 100) / 100;
+    return un === null ? null : Math.round(un * (veh === 7 ? 3 : 2) * 100) / 100;
   }
   // 2 vans économiques : toujours 2 × le prix du Van Éco (mêmes règles du jour) ; pas proposé là où il y a des V-Class de groupe
   if (veh === 5 && groupeVclass(R, dep, dest)) return null;
