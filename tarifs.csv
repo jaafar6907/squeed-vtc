@@ -1,5 +1,5 @@
 cle_depart;cle_destination;Départ;Destination;Semaine Berline;Semaine Van Éco;Semaine V-Class;Semaine Vito;Semaine Sprinter;Samedi Berline;Samedi Van Éco;Samedi V-Class;Samedi Vito;Samedi Sprinter
-LYS;courchevel;Aéroport Lyon (LYS);Courchevel;350;370;416;390;1250;440;415;490;460;1250
+LYS;courchevel;Aéroport Lyon (LYS);Courchevel;350;370;450;400;1250;440;415;490;460;1250
 LYS;meribel;Aéroport Lyon (LYS);Méribel;350;370;416;390;1250;440;415;490;460;1250
 LYS;valthorens;Aéroport Lyon (LYS);Val Thorens;350;370;416;390;1250;440;415;490;460;1250
 LYS;menuires;Aéroport Lyon (LYS);Les Menuires;350;370;416;390;1250;440;415;490;460;1250
@@ -33,7 +33,7 @@ LYS;st_tropez;Aéroport Lyon (LYS);Saint-Tropez;800;850;1100;1000;;800;850;1100;
 LYS;cannes_ville;Aéroport Lyon (LYS);Cannes;800;850;1100;1000;;800;850;1100;1000;
 BRON;courchevel;Aéroport Lyon-Bron (LYN);Courchevel;;;550;500;1250;;;550;500;1250
 BRON;valdisere;Aéroport Lyon-Bron (LYN);Val d'Isère;;;600;550;1300;;;600;550;1300
-PARTDIEU;courchevel;Gare Lyon Part-Dieu;Courchevel;350;370;416;390;1250;440;415;490;460;1250
+PARTDIEU;courchevel;Gare Lyon Part-Dieu;Courchevel;350;370;450;400;1250;440;415;490;460;1250
 PARTDIEU;meribel;Gare Lyon Part-Dieu;Méribel;350;370;416;390;1250;440;415;490;460;1250
 PARTDIEU;valthorens;Gare Lyon Part-Dieu;Val Thorens;350;370;416;390;1250;440;415;490;460;1250
 PARTDIEU;menuires;Gare Lyon Part-Dieu;Les Menuires;350;370;416;390;1250;440;415;490;460;1250
@@ -65,7 +65,7 @@ PARTDIEU;paris_ville;Gare Lyon Part-Dieu;Paris;850;1000;1350;1200;2900;850;1000;
 PARTDIEU;paris_cdg;Gare Lyon Part-Dieu;Paris CDG / Orly;850;1000;1350;1200;2900;850;1000;1350;1200;2900
 PARTDIEU;st_tropez;Gare Lyon Part-Dieu;Saint-Tropez;800;850;1100;1000;;800;850;1100;1000;
 PARTDIEU;cannes_ville;Gare Lyon Part-Dieu;Cannes;800;850;1100;1000;;800;850;1100;1000;
-LYONCENTRE;courchevel;Lyon centre-ville;Courchevel;390;410;456;430;1290;480;455;530;500;1290
+LYONCENTRE;courchevel;Lyon centre-ville;Courchevel;390;410;490;440;1290;480;455;530;500;1290
 LYONCENTRE;meribel;Lyon centre-ville;Méribel;390;410;456;430;1290;480;455;530;500;1290
 LYONCENTRE;valthorens;Lyon centre-ville;Val Thorens;390;410;456;430;1290;480;455;530;500;1290
 LYONCENTRE;menuires;Lyon centre-ville;Les Menuires;390;410;456;430;1290;480;455;530;500;1290
@@ -80,7 +80,7 @@ LYONCENTRE;chamonix;Lyon centre-ville;Chamonix;390;430;510;490;1290;440;480;590;
 LYONCENTRE;alpedhuez;Lyon centre-ville;Alpe d'Huez;290;310;360;340;1290;340;420;490;460;1290
 LYONCENTRE;deuxalpes;Lyon centre-ville;Les Deux Alpes;290;310;360;340;1290;340;420;490;460;1290
 LYONCENTRE;serrechevalier;Lyon centre-ville;Serre Chevalier;390;440;530;510;1290;440;490;590;570;1290
-GVA;courchevel;Aéroport / Gare Genève (GVA);Courchevel;350;340;400;380;1250;440;440;490;480;1250
+GVA;courchevel;Aéroport / Gare Genève (GVA);Courchevel;350;370;450;400;1250;440;440;490;480;1250
 GVA;meribel;Aéroport / Gare Genève (GVA);Méribel;350;340;400;380;1250;440;440;490;480;1250
 GVA;valthorens;Aéroport / Gare Genève (GVA);Val Thorens;350;340;400;380;1250;440;440;490;480;1250
 GVA;menuires;Aéroport / Gare Genève (GVA);Les Menuires;350;340;400;380;1250;440;440;490;480;1250
@@ -98,7 +98,7 @@ GVA;serrechevalier;Aéroport / Gare Genève (GVA);Serre Chevalier;450;450;450;45
 GVA;lyon_ville;Aéroport / Gare Genève (GVA);Lyon centre-ville;300;330;350;350;;300;330;350;350;
 GVA;paris_ville;Aéroport / Gare Genève (GVA);Paris;900;1000;1300;1200;;900;1000;1300;1200;
 GVA;paris_cdg;Aéroport / Gare Genève (GVA);Paris CDG / Orly;900;1000;1300;1200;;900;1000;1300;1200;
-GNB_AIR;courchevel;Aéroport / Gare Grenoble (GNB);Courchevel;325;370;416;390;1250;370;415;490;460;1250
+GNB_AIR;courchevel;Aéroport / Gare Grenoble (GNB);Courchevel;325;370;450;400;1250;370;415;490;460;1250
 GNB_AIR;meribel;Aéroport / Gare Grenoble (GNB);Méribel;325;370;416;390;1250;370;415;490;460;1250
 GNB_AIR;valthorens;Aéroport / Gare Grenoble (GNB);Val Thorens;325;370;416;390;1250;370;415;490;460;1250
 GNB_AIR;menuires;Aéroport / Gare Grenoble (GNB);Les Menuires;325;370;416;390;1250;370;415;490;460;1250
