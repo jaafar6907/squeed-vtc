@@ -126,6 +126,7 @@ function calculerPrix(calc) {
   if (retour) {
     // Le retour est calculé à SA date (samedi ou semaine) ; sans date de retour, on prend celle de l'aller
     const dateRet = /^\d{4}-\d{2}-\d{2}$/.test(calc.dateret || '') ? calc.dateret : date;
+    if (dateRet < date) return { erreur: 'date_retour_invalide' }; // retour avant l'aller : refusé
     const ret = prixTrajet(ligne, veh, dateRet, dest, R, dep);
     if (ret === null) return { erreur: 'trajet_sur_devis' };
     base += ret;
@@ -149,6 +150,7 @@ const MESSAGES = {
     trop_de_passagers: 'Trop de passagers pour ce véhicule : choisissez un véhicule plus grand.',
     date_invalide: 'Date invalide : vérifiez la date de départ.',
     date_passee: 'La date de départ est passée : choisissez une autre date.',
+    date_retour_invalide: 'La date de retour est avant la date de l\'aller : vérifiez vos dates.',
     prix_change: 'Le prix a été mis à jour : rechargez la page pour voir le tarif exact.',
     dispo_invalide: 'Durée de mise à disposition invalide : vérifiez le nombre d\'heures.',
   },
@@ -159,6 +161,7 @@ const MESSAGES = {
     trop_de_passagers: 'Too many passengers for this vehicle: please choose a larger one.',
     date_invalide: 'Invalid date: please check your outbound date.',
     date_passee: 'This date is in the past: please choose another date.',
+    date_retour_invalide: 'Your return date is before your outbound date: please check your dates.',
     prix_change: 'The price has been updated: please reload the page to see the exact fare.',
     dispo_invalide: 'Invalid number of hours: please check your booking duration.',
   },
