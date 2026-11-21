@@ -44,7 +44,8 @@ function chargerTarifs() {
   if (prix.BRON_AIR && !prix.BRON) prix.BRON = prix.BRON_AIR;
   if (prix.BRON && !prix.BRON_AIR) prix.BRON_AIR = prix.BRON;
 
-  const r = { majo: 20, samedis: [], saison: { pct: 0, debut: '', fin: '' }, remises: [], prixJour: [], sansBerline: { debut: '', fin: '' }, groupesVclass: [], supplements: [0, 0, 5, 20, 18, 0] };
+  const r = { majo: 20, samedis: [], saison: { pct: 0, debut: '', fin: '' }, remises: [], prixJour: [], sansBerline: { debut: '', fin: '' }, groupesVclass: [],
+    dispo: { vclass_heure: 80, vclass_journee: 890, velar_heure: 120, heures_min: 2, heures_max: 12 }, supplements: [0, 0, 5, 20, 18, 0] };
   const SUPP = ['supplement_rehausseur', 'supplement_siege_enfant', 'supplement_siege_bebe',
     'supplement_support_ski', 'supplement_velo', 'supplement_fauteuil_roulant'];
   try {
@@ -60,6 +61,11 @@ function chargerTarifs() {
         // => propose « 2 V-Class » (9-14 pers.) et « 3 V-Class » (15-21 pers.) à la place des 2 vans éco
         const liste = (x) => String(x || '').split(/[\s,|]+/).filter(Boolean);
         r.groupesVclass.push({ departs: liste(c[1]), dests: liste(c[2]), s: nombre(c[3]), sa: nombre(c[4]) });
+      }
+      else if (/^dispo_(vclass_heure|vclass_journee|velar_heure|heures_min|heures_max)$/.test(cle)) {
+        // Mise à disposition : dispo_vclass_heure;80 / dispo_vclass_journee;890 / dispo_velar_heure;120 / dispo_heures_min;2 / dispo_heures_max;12
+        const n = parseFloat(String(val).replace(',', '.'));
+        if (n > 0) r.dispo[cle.slice(6)] = n;
       }
       else if (cle === 'saison_fin' && /^\d{4}-\d{2}-\d{2}$/.test(val)) r.saison.fin = val;
       else if (cle === 'prix_jour' && (/^\d{4}-\d{2}-\d{2}$/.test(val) || /^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)$/i.test(val))) {
