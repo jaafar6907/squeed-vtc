@@ -70,9 +70,40 @@ function prixTrajet(ligne, veh, dateISO, dest, R, dep) {
   return Math.round(p * 100) / 100; // arrondi au centime
 }
 
+// Mise à disposition d'un chauffeur (page « chauffeur à disposition ») :
+// calc = { type:'dispo', veh:'vclass'|'velar', formule:'heures'|'journee', heures, date, datefin (facultatif, plusieurs jours), pax }
+function calculerDispo(calc, D) {
+  const veh = calc.veh, formule = calc.formule;
+  const heures = parseInt(calc.heures, 10);
+  const pax = parseInt(calc.pax, 10) || 1;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(calc.date || '')) return { erreur: 'date_invalide' };
+  const hier = new Date(Date.now() - 36 * 3600 * 1000).toISOString().slice(0, 10);
+  if (calc.date < hier) return { erreur: 'date_passee' };
+  // Plusieurs jours : du premier au dernier jour inclus (30 jours maximum)
+  let jours = 1;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(calc.datefin || '') && calc.datefin > calc.date) {
+    jours = Math.round((Date.parse(calc.datefin) - Date.parse(calc.date)) / 864e5) + 1;
+    if (jours > 30) return { erreur: 'dispo_invalide' };
+  }
+  const r = calculerDispoJour(veh, formule, heures, pax, D);
+  return r.total ? { total: Math.round(r.total * jours * 100) / 100 } : r;
+}
+function calculerDispoJour(veh, formule, heures, pax, D) {
+  if (veh === 'vclass') {
+    if (pax < 1 || pax > 7) return { erreur: 'trop_de_passagers' };
+    if (formule === 'journee') return { total: D.vclass_journee };
+    if (formule === 'heures' && heures >= D.heures_min && heures < D.heures_max) return { total: heures * D.vclass_heure };
+  } else if (veh === 'velar') {
+    if (pax < 1 || pax > 3) return { erreur: 'trop_de_passagers' };
+    if (formule === 'heures' && heures >= D.heures_min && heures <= D.heures_max) return { total: heures * D.velar_heure };
+  }
+  return { erreur: 'dispo_invalide' };
+}
+
 // Renvoie { total } ou { erreur }
 function calculerPrix(calc) {
   if (!calc || typeof calc !== 'object') return { erreur: 'calc_manquant' };
+  if (calc.type === 'dispo') return calculerDispo(calc, chargerTarifs().regles.dispo);
   const T = chargerTarifs();
   const PRIX = T.prix, R = T.regles, SUPPLEMENTS = R.supplements;
   const { dep, dest, date, retour } = calc;
@@ -119,6 +150,7 @@ const MESSAGES = {
     date_invalide: 'Date invalide : vérifiez la date de départ.',
     date_passee: 'La date de départ est passée : choisissez une autre date.',
     prix_change: 'Le prix a été mis à jour : rechargez la page pour voir le tarif exact.',
+    dispo_invalide: 'Durée de mise à disposition invalide : vérifiez le nombre d\'heures.',
   },
   en: {
     calc_manquant: 'This page is out of date: please reload it (Cmd+R / Ctrl+R) and try again.',
@@ -128,6 +160,7 @@ const MESSAGES = {
     date_invalide: 'Invalid date: please check your outbound date.',
     date_passee: 'This date is in the past: please choose another date.',
     prix_change: 'The price has been updated: please reload the page to see the exact fare.',
+    dispo_invalide: 'Invalid number of hours: please check your booking duration.',
   },
 };
 
@@ -242,7 +275,8 @@ async function handler(req, res) {
         prix_verifie: 'oui',
       },
       success_url: `https://reservation.squeed.fr/confirmation.html?session_id={CHECKOUT_SESSION_ID}&lang=${en ? 'en' : 'fr'}`,
-      cancel_url: fromSki ? 'https://ski.squeed.fr/book/' : 'https://squeed.fr/reservation/',
+      cancel_url: /^https:\/\/(ski\.|www\.)?squeed\.fr\//.test(data.pageRetour || '') ? String(data.pageRetour).slice(0, 300)
+        : (fromSki ? 'https://ski.squeed.fr/book/' : 'https://squeed.fr/reservation/'),
       locale: en ? 'en' : 'fr',
     });
 
