@@ -15,6 +15,7 @@ module.exports = function handler(req, res) {
       prixJour: t.regles.prixJour,
       sansBerline: t.regles.sansBerline,
       groupesVclass: t.regles.groupesVclass,
+      dispo: t.regles.dispo,
       remises: t.regles.remises.map((x) => ({ date: x.date, pct: x.pct / 100, dests: x.dests, departs: x.departs })),
       supplements: t.regles.supplements,
     });
