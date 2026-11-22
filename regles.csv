@@ -30,6 +30,10 @@ prix_jour;2026-12-13;GNB_AIR GNB_TRAIN;alpedhuez deuxalpes;200;247.5;275;265;
 prix_jour;2026-12-20;LYS PARTDIEU;alpedhuez deuxalpes;275;345;375;365;
 prix_jour;2026-12-20;GNB_AIR GNB_TRAIN;alpedhuez deuxalpes;200;247.5;275;265;
 prix_jour;dimanche;CMF_AIR CMF_TRAIN;alpedhuez deuxalpes;245;275;305;295;
+prix_jour;2027-02-06;GNB_AIR GNB_TRAIN;alpedhuez deuxalpes;;400;450;425;
+prix_jour;2027-02-13;GNB_AIR GNB_TRAIN;alpedhuez deuxalpes;;400;450;425;
+prix_jour;2027-02-20;GNB_AIR GNB_TRAIN;alpedhuez deuxalpes;;400;450;425;
+prix_jour;2027-02-27;GNB_AIR GNB_TRAIN;alpedhuez deuxalpes;;400;450;425;
 supplement_rehausseur;0;€ (0 = gratuit)
 supplement_siege_enfant;0;€
 supplement_siege_bebe;5;€
