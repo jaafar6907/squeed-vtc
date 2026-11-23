@@ -25,6 +25,10 @@ function groupeVclass(R, dep, dest) {
   return (R.groupesVclass || []).find((x) => (!x.departs.length || x.departs.includes(dep)) && (!x.dests.length || x.dests.includes(dest)));
 }
 
+// Montant fixe ajouté un jour précis (regles.csv, lignes ajout_jour) : une seule fois par trajet, même à 2 ou 3 véhicules
+function ajoutJour(R, dateISO, dest, dep) {
+  return (R.ajouts || []).filter((x) => x.date === dateISO && (!x.dests.length || x.dests.includes(dest)) && (!x.departs.length || x.departs.includes(dep))).reduce((s, x) => s + x.eur, 0);
+}
 function prixTrajet(ligne, veh, dateISO, dest, R, dep) {
   // Options de groupe :
   //  6 = « 2 vans Mercedes » (9-15 pers.) sur les trajets SANS règle groupe_vclass : 2 × V-Class du trajet
@@ -38,13 +42,15 @@ function prixTrajet(ligne, veh, dateISO, dest, R, dep) {
     if (G && G.s) { lv.s[2] = G.s; lv.sa[2] = G.sa || G.s; }
     else if (G && G.sa) lv.sa[2] = G.sa;
     const un = prixTrajet(lv, 2, dateISO, dest, R, dep);
-    return un === null ? null : Math.round(un * (veh === 7 ? 3 : 2) * 100) / 100;
+    const aj = ajoutJour(R, dateISO, dest, dep);
+    return un === null ? null : Math.round(((un - aj) * (veh === 7 ? 3 : 2) + aj) * 100) / 100;
   }
   // 2 vans économiques : toujours 2 × le prix du Van Éco (mêmes règles du jour) ; pas proposé là où il y a des V-Class de groupe
   if (veh === 5 && groupeVclass(R, dep, dest)) return null;
   if (veh === 5) {
     const un = prixTrajet(ligne, 1, dateISO, dest, R, dep);
-    return un === null ? null : Math.round(un * 2 * 100) / 100;
+    const aj = ajoutJour(R, dateISO, dest, dep);
+    return un === null ? null : Math.round(((un - aj) * 2 + aj) * 100) / 100;
   }
   // Pas de berline les samedis vers la montagne pendant la période indiquée dans regles.csv
   const SB = R.sansBerline || {};
@@ -55,7 +61,9 @@ function prixTrajet(ligne, veh, dateISO, dest, R, dep) {
   const jour = JOURS[new Date(dateISO + 'T12:00:00Z').getUTCDay()];
   const ok = (x) => (!x.departs.length || x.departs.includes(dep)) && (!x.dests.length || x.dests.includes(dest)) && x.prix[veh];
   const PJ = (R.prixJour || []).find((x) => x.date === dateISO && ok(x)) || (R.prixJour || []).find((x) => x.date === jour && ok(x));
-  if (PJ) return PJ.prix[veh];
+  // Montant fixe ajouté ce jour-là (regles.csv, lignes ajout_jour), par véhicule et par trajet
+  const AJ = ajoutJour(R, dateISO, dest, dep);
+  if (PJ) return Math.round((PJ.prix[veh] + AJ) * 100) / 100;
   const samedi = new Date(dateISO + 'T12:00:00Z').getUTCDay() === 6;
   let p = (samedi ? ligne.sa : ligne.s)[veh];
   if (!p) return null;
@@ -67,7 +75,7 @@ function prixTrajet(ligne, veh, dateISO, dest, R, dep) {
     if (R.majo && R.samedis.includes(dateISO) && DEST_SKI.includes(dest)) p = p * (1 + R.majo / 100);          // samedis de vacances
     else if (S.pct && S.debut && S.fin && dateISO >= S.debut && dateISO <= S.fin) p = p * (1 + S.pct / 100); // samedis de haute saison
   }
-  return Math.round(p * 100) / 100; // arrondi au centime
+  return Math.round((p + AJ) * 100) / 100; // arrondi au centime
 }
 
 // Mise à disposition d'un chauffeur (page « chauffeur à disposition ») :
