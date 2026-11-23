@@ -44,7 +44,7 @@ function chargerTarifs() {
   if (prix.BRON_AIR && !prix.BRON) prix.BRON = prix.BRON_AIR;
   if (prix.BRON && !prix.BRON_AIR) prix.BRON_AIR = prix.BRON;
 
-  const r = { majo: 20, samedis: [], saison: { pct: 0, debut: '', fin: '' }, remises: [], prixJour: [], sansBerline: { debut: '', fin: '' }, groupesVclass: [],
+  const r = { majo: 20, samedis: [], saison: { pct: 0, debut: '', fin: '' }, remises: [], ajouts: [], prixJour: [], sansBerline: { debut: '', fin: '' }, groupesVclass: [],
     dispo: { vclass_heure: 80, vclass_journee: 890, velar_heure: 120, heures_min: 2, heures_max: 12 }, supplements: [0, 0, 5, 20, 18, 0] };
   const SUPP = ['supplement_rehausseur', 'supplement_siege_enfant', 'supplement_siege_bebe',
     'supplement_support_ski', 'supplement_velo', 'supplement_fauteuil_roulant'];
@@ -74,6 +74,11 @@ function chargerTarifs() {
         const prix = [];
         for (let i = 0; i < VEHICULES; i++) prix.push(nombre(c[4 + i]));
         r.prixJour.push({ date: String(val).toLowerCase(), departs: liste(c[2]), dests: liste(c[3]), prix });
+      }
+      else if (cle === 'ajout_jour' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+        // ajout_jour;AAAA-MM-JJ;montant en € ajouté par trajet;destinations (vide = toutes);départs (vide = tous)
+        const eur = parseFloat(String(c[2] || '').replace(',', '.'));
+        if (eur) r.ajouts.push({ date: val, eur, dests: String(c[3] || '').split(/[\s,|]+/).filter(Boolean), departs: String(c[4] || '').split(/[\s,|]+/).filter(Boolean) });
       }
       else if (cle === 'remise_jour' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
         // remise_jour;AAAA-MM-JJ;pourcentage;destinations (vide = toutes);départs (vide = tous)
