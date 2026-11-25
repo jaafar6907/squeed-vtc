@@ -134,3 +134,5 @@ MEGEVE;courchevel;Megève;Courchevel;;;200;200;;;;350;350;
 COURCHEVEL;megeve;Courchevel;Megève;;;200;200;;;;350;350;
 DEUXALPES;alpedhuez;Les Deux Alpes;Alpe d'Huez;;200;250;225;;;200;250;225;
 ALPEDHUEZ;deuxalpes;Alpe d'Huez;Les Deux Alpes;;200;250;225;;;200;250;225;
+OISANS;alpedhuez;Villages de l'Oisans;Alpe d'Huez;;;;;;;;;;
+ALPEDHUEZ;oisans;Alpe d'Huez;Villages de l'Oisans;;;;;;;;;;
