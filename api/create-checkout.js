@@ -30,6 +30,14 @@ function ajoutJour(R, dateISO, dest, dep) {
   return (R.ajouts || []).filter((x) => x.date === dateISO && (!x.dests.length || x.dests.includes(dest)) && (!x.departs.length || x.departs.includes(dep))).reduce((s, x) => s + x.eur, 0);
 }
 function prixTrajet(ligne, veh, dateISO, dest, R, dep) {
+  var SD = false;
+  // Jours « sur devis » (regles.csv, lignes sur_devis_jour) : pas de réservation en ligne ce jour-là
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateISO || '')) {
+    const p = dateISO.split('-'), jour = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'][new Date(+p[0], +p[1] - 1, +p[2]).getDay()];
+    // un jour (samedi), une date (2027-03-20) ou une période (2027-03-20..2027-03-27)
+    const touche = (j) => j === jour || j === dateISO || (j.includes('..') && dateISO >= j.split('..')[0] && dateISO <= j.split('..')[1]);
+    var SD = (R.surDevis || []).some((x) => x.jours.some(touche) && (!x.departs.length || x.departs.includes(dep)) && (!x.dests.length || x.dests.includes(dest)));
+  }
   // Options de groupe :
   //  6 = « 2 vans Mercedes » (9-15 pers.) sur les trajets SANS règle groupe_vclass : 2 × V-Class du trajet
   //  8 = « 2 V-Class » (9-14 pers.) et 7 = « 3 V-Class » (15-21 pers.) sur les trajets AVEC règle groupe_vclass
@@ -60,7 +68,10 @@ function prixTrajet(ligne, veh, dateISO, dest, R, dep) {
   const JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
   const jour = JOURS[new Date(dateISO + 'T12:00:00Z').getUTCDay()];
   const ok = (x) => (!x.departs.length || x.departs.includes(dep)) && (!x.dests.length || x.dests.includes(dest)) && x.prix[veh];
-  const PJ = (R.prixJour || []).find((x) => x.date === dateISO && ok(x)) || (R.prixJour || []).find((x) => x.date === jour && ok(x));
+  const enPeriode = (x) => x.date.includes('..') && dateISO >= x.date.split('..')[0] && dateISO <= x.date.split('..')[1];
+  const PJ = (R.prixJour || []).find((x) => x.date === dateISO && ok(x)) || (R.prixJour || []).find((x) => enPeriode(x) && ok(x)) || (R.prixJour || []).find((x) => x.date === jour && ok(x));
+  // Jour « sur devis » : seulement si aucun prix du jour n'est fixé pour ce véhicule
+  if (!PJ && SD) return null;
   // Montant fixe ajouté ce jour-là (regles.csv, lignes ajout_jour), par véhicule et par trajet
   const AJ = ajoutJour(R, dateISO, dest, dep);
   if (PJ) return Math.round((PJ.prix[veh] + AJ) * 100) / 100;
@@ -130,13 +141,26 @@ function calculerPrix(calc) {
 
   const aller = prixTrajet(ligne, veh, date, dest, R, dep);
   if (aller === null) return { erreur: 'trajet_sur_devis' };
+  // Créneau horaire imposé certains jours (regles.csv, lignes horaire_jour), ex. retours du festival entre 00:00 et 04:00
+  const heureOk = (d, a, jour, h) => {
+    const regle = (R.horaires || []).find((x) => (x.date === jour || (x.date.includes('..') && jour >= x.date.split('..')[0] && jour <= x.date.split('..')[1]))
+      && (!x.departs.length || x.departs.includes(d)) && (!x.dests.length || x.dests.includes(a)));
+    if (!regle) return true;
+    const t = String(h || '').replace('h', ':');
+    return /^\d{2}:\d{2}$/.test(t) && t >= regle.de && t <= regle.a;
+  };
+  if (!heureOk(dep, dest, date, calc.heure)) return { erreur: 'horaire_hors_creneau' };
   let base = aller;
   if (retour) {
     // Le retour est calculé à SA date (samedi ou semaine) ; sans date de retour, on prend celle de l'aller
     const dateRet = /^\d{4}-\d{2}-\d{2}$/.test(calc.dateret || '') ? calc.dateret : date;
     if (dateRet < date) return { erreur: 'date_retour_invalide' }; // retour avant l'aller : refusé
-    const ret = prixTrajet(ligne, veh, dateRet, dest, R, dep);
+    // Trajet retour avec son propre tarif s'il existe (ex. ALPEDHUEZ;oisans pour le retour de OISANS;alpedhuez), sinon le même trajet
+    const rDep = String(dest).toUpperCase(), rDest = String(dep).toLowerCase();
+    const inverse = PRIX[rDep] && PRIX[rDep][rDest];
+    const ret = inverse ? prixTrajet(PRIX[rDep][rDest], veh, dateRet, rDest, R, rDep) : prixTrajet(ligne, veh, dateRet, dest, R, dep);
     if (ret === null) return { erreur: 'trajet_sur_devis' };
+    if (!(inverse ? heureOk(rDep, rDest, dateRet, calc.heureRet) : heureOk(dep, dest, dateRet, calc.heureRet))) return { erreur: 'horaire_hors_creneau' };
     base += ret;
   }
 
@@ -154,6 +178,7 @@ const MESSAGES = {
   fr: {
     calc_manquant: 'Formulaire obsolète : rechargez la page (Cmd+R / Ctrl+R) puis réessayez.',
     trajet_sur_devis: 'Ce trajet est sur devis : contactez-nous par WhatsApp ou par e-mail.',
+    horaire_hors_creneau: 'Cet horaire n\'est pas réservable en ligne pour ce trajet : choisissez un horaire dans le créneau indiqué ou contactez-nous.',
     vehicule_inconnu: 'Véhicule invalide : rechargez la page puis réessayez.',
     trop_de_passagers: 'Trop de passagers pour ce véhicule : choisissez un véhicule plus grand.',
     date_invalide: 'Date invalide : vérifiez la date de départ.',
@@ -165,6 +190,7 @@ const MESSAGES = {
   en: {
     calc_manquant: 'This page is out of date: please reload it (Cmd+R / Ctrl+R) and try again.',
     trajet_sur_devis: 'This route is on quote: please contact us on WhatsApp or by email.',
+    horaire_hors_creneau: 'This pick-up time cannot be booked online for this route: choose a time within the indicated slot or contact us.',
     vehicule_inconnu: 'Invalid vehicle: please reload the page and try again.',
     trop_de_passagers: 'Too many passengers for this vehicle: please choose a larger one.',
     date_invalide: 'Invalid date: please check your outbound date.',
