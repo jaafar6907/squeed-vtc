@@ -44,7 +44,7 @@ function chargerTarifs() {
   if (prix.BRON_AIR && !prix.BRON) prix.BRON = prix.BRON_AIR;
   if (prix.BRON && !prix.BRON_AIR) prix.BRON_AIR = prix.BRON;
 
-  const r = { majo: 20, samedis: [], saison: { pct: 0, debut: '', fin: '' }, remises: [], ajouts: [], prixJour: [], sansBerline: { debut: '', fin: '' }, groupesVclass: [],
+  const r = { majo: 20, samedis: [], saison: { pct: 0, debut: '', fin: '' }, remises: [], ajouts: [], surDevis: [], horaires: [], prixJour: [], sansBerline: { debut: '', fin: '' }, groupesVclass: [],
     dispo: { vclass_heure: 80, vclass_journee: 890, velar_heure: 120, heures_min: 2, heures_max: 12 }, supplements: [0, 0, 5, 20, 18, 0] };
   const SUPP = ['supplement_rehausseur', 'supplement_siege_enfant', 'supplement_siege_bebe',
     'supplement_support_ski', 'supplement_velo', 'supplement_fauteuil_roulant'];
@@ -68,15 +68,26 @@ function chargerTarifs() {
         if (n > 0) r.dispo[cle.slice(6)] = n;
       }
       else if (cle === 'saison_fin' && /^\d{4}-\d{2}-\d{2}$/.test(val)) r.saison.fin = val;
-      else if (cle === 'prix_jour' && (/^\d{4}-\d{2}-\d{2}$/.test(val) || /^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)$/i.test(val))) {
+      else if (cle === 'prix_jour' && (/^\d{4}-\d{2}-\d{2}$/.test(val) || /^\d{4}-\d{2}-\d{2}\.\.\d{4}-\d{2}-\d{2}$/.test(val) || /^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)$/i.test(val))) {
         // prix_jour;AAAA-MM-JJ ou jour (ex. dimanche = tous les dimanches);départs;destinations;Berline;Van Éco;V-Class;Vito;Sprinter (aller simple, case vide = prix habituel)
         const liste = (x) => String(x || '').split(/[\s,|]+/).filter(Boolean);
         const prix = [];
         for (let i = 0; i < VEHICULES; i++) prix.push(nombre(c[4 + i]));
         r.prixJour.push({ date: String(val).toLowerCase(), departs: liste(c[2]), dests: liste(c[3]), prix });
       }
+      else if (cle === 'horaire_jour' && /^\d{4}-\d{2}-\d{2}(\.\.\d{4}-\d{2}-\d{2})?$/.test(val)) {
+        // horaire_jour;date ou période;départs;destinations;de (HH:MM);à (HH:MM) => prise en charge en ligne seulement dans ce créneau
+        const liste = (x) => String(x || '').split(/[\s,|]+/).filter(Boolean);
+        const hh = (x) => { const m = String(x || '').match(/^(\d{1,2})[:h](\d{2})$/); return m ? m[1].padStart(2, '0') + ':' + m[2] : ''; };
+        if (hh(c[4]) && hh(c[5])) r.horaires.push({ date: val, departs: liste(c[2]), dests: liste(c[3]), de: hh(c[4]), a: hh(c[5]) });
+      }
+      else if (cle === 'sur_devis_jour') {
+        // sur_devis_jour;jours (ex. samedi dimanche), dates (2027-03-22) ou périodes (2027-03-20..2027-03-27);départs;destinations => pas de prix en ligne (« sur devis »)
+        const liste = (x) => String(x || '').toLowerCase().split(/[\s,|]+/).filter(Boolean);
+        r.surDevis.push({ jours: liste(c[1]), departs: String(c[2] || '').split(/[\s,|]+/).filter(Boolean), dests: String(c[3] || '').split(/[\s,|]+/).filter(Boolean) });
+      }
       else if (cle === 'ajout_jour' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
-        // ajout_jour;AAAA-MM-JJ;montant en € ajouté par trajet;destinations (vide = toutes);départs (vide = tous)
+        // ajout_jour;AAAA-MM-JJ;montant en € ajouté par véhicule et par trajet;destinations (vide = toutes);départs (vide = tous)
         const eur = parseFloat(String(c[2] || '').replace(',', '.'));
         if (eur) r.ajouts.push({ date: val, eur, dests: String(c[3] || '').split(/[\s,|]+/).filter(Boolean), departs: String(c[4] || '').split(/[\s,|]+/).filter(Boolean) });
       }
