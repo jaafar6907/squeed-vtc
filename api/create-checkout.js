@@ -132,6 +132,7 @@ function calculerPrix(calc) {
   if (!PRIX[dep] || !PRIX[dep][dest]) return { erreur: 'trajet_sur_devis' };
   const ligne = PRIX[dep][dest];
   if (!(veh in MAX_PAX)) return { erreur: 'vehicule_inconnu' };
+  if (veh === 0) return { erreur: 'vehicule_inconnu' }; // berline retirée de la flotte
   if (pax < 1 || pax > MAX_PAX[veh]) return { erreur: 'trop_de_passagers' };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) return { erreur: 'date_invalide' };
 
